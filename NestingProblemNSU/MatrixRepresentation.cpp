@@ -41,11 +41,30 @@ MatrixRepresentation::MatrixRepresentation( Polygon poligon, int h ){
 					float b = -i1.x - i1.y * a;
 					float yP = k * h;
 					float xP = -b - a * k * h; //Тут еще было округление до восми знаков после запятой, зачем ???
-
+					if ( xP == i1.x )
+					{
+						if ( ( i2.y - yP ) * poligon [( i - 1 ) % poligon.size()].y - yP < 0 )
+						{
+							edges [floor( i1.x / h + accuracy )][k] += 1;
+						}
+						else if ( ( i2.y - yP ) * poligon [( i - 1 ) % poligon.size()].y - yP > 0 )
+						{
+							edges [floor( i1.x / h + accuracy )][k] += 1;
+						}
+					}
 				}
 			}
 		}
 	}
+	std::vector<std::vector<int>> matrix( nX + 1, std::vector<int>( nY + 1 ) );
 
+	for ( int k = 0; k < nY; k++ )
+	{
+		float flag = 0.0;
 
+		for ( int i = 0; i <= nX; i++ )
+		{
+			//if (edges[i][k]%2==0 && edges[i][k]!=0 ) // о боже, снова остаток от деления float на int и как это понимать ? Требуется рефакторинг
+		}
+	}
 }
