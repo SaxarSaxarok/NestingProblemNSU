@@ -39,7 +39,9 @@ MatrixRepresentation::MatrixRepresentation( Polygon poligon, int h ){
 				{//x+ay+b=0
 					float a = -( i2.x - i1.x ) / ( i2.y - i1.y );
 					float b = -i1.x - i1.y * a;
-					float yP = k * h;// ƒальше ничего не пон€л
+					float yP = k * h;
+					float xP = -b - a * k * h; //“ут еще было округление до восми знаков после зап€той, зачем ???
+
 				}
 			}
 		}
