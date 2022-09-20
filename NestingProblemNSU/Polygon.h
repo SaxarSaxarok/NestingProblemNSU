@@ -4,13 +4,13 @@
 
 class Polygon{
 private:
-	std::vector<Point> points;
+	std::vector<Point<float>> points;
 public:
 	Polygon(){};
-	Polygon( const std::vector<Point>& points_ );
+	Polygon( const std::vector<Point<float>>& points_ );
 	Polygon( const Polygon& polygon_ );
 
-	Point operator [] ( int index );
+	Point<float> operator [] ( int index );
 
 	int size();
 

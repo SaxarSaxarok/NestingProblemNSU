@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <algorithm>
 
-Polygon::Polygon ( const std::vector<Point>& points ){
+Polygon::Polygon ( const std::vector<Point<float>>& points ){
 	for ( auto& point : points )
 	{
 		this->points.push_back ( point );
@@ -17,7 +17,7 @@ Polygon::Polygon ( const Polygon& polygon_ ){
 	}
 }
 
-Point Polygon::operator[]( int i ){
+Point<float> Polygon::operator[]( int i ){
 	if ( i > -1 && i < this->points.size () )
 		return this->points [i];
 	else
