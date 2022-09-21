@@ -4,6 +4,6 @@ class MatrixRepresentation
 {
 	std::vector<std::vector<int>> matrix;
 public:
-	MatrixRepresentation(Polygon poligon, int h);
+	MatrixRepresentation(Polygon poligon, float h);
 };
 
