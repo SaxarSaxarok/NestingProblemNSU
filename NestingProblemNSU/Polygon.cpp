@@ -44,7 +44,7 @@ Polygon* Polygon::shiftToOrigin(){
 		point.x -= minXY.first;
 		point.y -= minXY.second;
 	}
-	update();
+	barycenter = Point<float>( barycenter.x - minXY.first, barycenter.y - minXY.second );
 	return this;
 }
 
@@ -209,10 +209,6 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( float h ){
 	for ( auto i = 0; i < matrix.size(); i++ ) matrix [i].pop_back();
 
 	return matrix;
-}
-
-void Polygon::update(){
-	calculateBarycenter();
 }
 
 void Polygon::calculateArea(){

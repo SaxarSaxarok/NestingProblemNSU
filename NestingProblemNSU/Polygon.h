@@ -30,7 +30,5 @@ public:
 	void calculateBarycenter();
 
 	void calculateArea();
-
-	void update();
 };
 
