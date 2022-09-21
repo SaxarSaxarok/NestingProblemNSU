@@ -4,6 +4,12 @@ class Item
 {
 private:
 	Polygon polygon;
-	Polygon shellPolygon;
-};
+	std::vector<std::vector<int>> matrix;
+	std::vector<std::vector<int>> shifts;
+public:
+	Item( Polygon& polygon , float h);
 
+private:
+
+void makeShifts();
+};

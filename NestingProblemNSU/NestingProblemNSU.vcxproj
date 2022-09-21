@@ -141,13 +141,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Item.cpp" />
-    <ClCompile Include="MatrixRepresentation.cpp" />
     <ClCompile Include="Polygon.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Item.h" />
-    <ClInclude Include="MatrixRepresentation.h" />
     <ClInclude Include="Polygon.h" />
     <ClInclude Include="Point.h" />
   </ItemGroup>

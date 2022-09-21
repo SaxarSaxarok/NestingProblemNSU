@@ -21,9 +21,6 @@
     <ClCompile Include="Polygon.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="MatrixRepresentation.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="Item.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
@@ -33,9 +30,6 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Point.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="MatrixRepresentation.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Item.h">

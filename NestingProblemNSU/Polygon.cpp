@@ -9,6 +9,8 @@ Polygon::Polygon( const std::vector<Point<float>>& points ){
 	{
 		this->points.push_back( point );
 	}
+	calculateArea();
+	calculateBarycenter();
 }
 
 Polygon::Polygon( const Polygon& polygon_ ){
@@ -16,6 +18,8 @@ Polygon::Polygon( const Polygon& polygon_ ){
 	{
 		this->points.push_back( point );
 	}
+	calculateArea();
+	calculateBarycenter();
 }
 
 Point<float> Polygon::operator[]( int i ){
@@ -23,16 +27,6 @@ Point<float> Polygon::operator[]( int i ){
 		return this->points [i];
 	else
 		throw std::out_of_range( "The index is out of range" );
-}
-
-float Polygon::getArea(){
-	float result = 0.0;
-	for ( auto i = 0; i < this->points.size(); i++ )
-	{
-		result += this->points [i].x * this->points [i + 1].y;
-		result -= this->points [i + 1].x * this->points [i].y;
-	}
-	return result / 2;
 }
 
 int Polygon::size(){
@@ -50,7 +44,7 @@ Polygon* Polygon::shiftToOrigin(){
 		point.x -= minXY.first;
 		point.y -= minXY.second;
 	}
-
+	update();
 	return this;
 }
 
@@ -81,7 +75,7 @@ std::pair<float, float> Polygon::getMinXY(){
 }
 
 std::vector<std::vector<int>> Polygon::getMatrixRepresentation( float h ){
-	float accuracy = h * 0.000001;
+	float accuracy = h * 0.000001f;
 	this->shiftToOrigin();
 	auto maxXY = this->getMaxXY();
 	auto minXY = this->getMinXY();
@@ -92,9 +86,9 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( float h ){
 
 	std::vector<std::vector<int>> edges( nX + 1, std::vector<int>( nY, 0 ) );
 
-	for ( int k = 0; k < nY; k++ )
+	for ( auto k = 0; k < nY; k++ )
 	{
-		for ( int i0 = 0; i0 < this->size(); i0++ )
+		for ( auto i0 = 0; i0 < this->size(); i0++ )
 		{
 			int i1 = ( i0 + 1 ) % this->size();
 			if ( ( std::min( points [i0].y, points [i1].y ) <= k * h ) &&
@@ -126,11 +120,11 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( float h ){
 	}
 	std::vector<std::vector<int>>matrix( nX + 1, std::vector<int>( nY + 1, 0 ) );
 
-	for ( int k = 0; k < nY; k++ )
+	for ( auto k = 0; k < nY; k++ )
 	{
 		bool flag = false;
 
-		for ( int i = 0; i <= nX; i++ )
+		for ( auto i = 0; i <= nX; i++ )
 		{
 			if ( ( edges [i][k] % 2 == 0 ) and ( edges [i][k] != 0 ) )
 			{
@@ -150,7 +144,7 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( float h ){
 		}
 	}
 
-	for ( int i = 0; i < this->size(); i++ )
+	for ( auto i = 0; i < this->size(); i++ )
 	{
 		int j = ( i + 1 ) % this->size();
 		Point<float> i1( points [i] );
@@ -182,7 +176,7 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( float h ){
 		Point<int> p( floor( i1.x / h ), floor( i1.y / h ) );
 		if ( j1.y == j2.y )
 		{
-			for ( int j = 0; j <= abs( j1.x - j2.x ); j++ ) // Было i Не сломается ? 
+			for ( auto j = 0; j <= abs( j1.x - j2.x ); j++ ) // Было i Не сломается ? 
 			{
 				matrix [p.x][p.y] = 1;
 				p.x += stepX;
@@ -190,7 +184,7 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( float h ){
 		}
 		else
 		{
-			for ( int j = 0; j <= abs( j1.x - j2.x ) + abs( j1.y - j2.y ); j++ )
+			for ( auto j = 0; j <= abs( j1.x - j2.x ) + abs( j1.y - j2.y ); j++ )
 			{
 				matrix [p.x][p.y] = 1;
 				if ( j2 != p ) //Аналогично было i
@@ -212,15 +206,37 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( float h ){
 		}
 	}
 	matrix.pop_back();
-	for ( int i = 0; i < matrix.size(); i++ ) matrix [i].pop_back();
+	for ( auto i = 0; i < matrix.size(); i++ ) matrix [i].pop_back();
 
-	for ( int i = 0; i < matrix.size(); i++ )
-	{
-		for ( int j = 0; j < matrix [i].size(); j++ )
-		{
-			std::cout << matrix [i][j] << ' ';
-		}
-		std::cout << "\n";
-	}
 	return matrix;
+}
+
+void Polygon::update(){
+	calculateBarycenter();
+}
+
+void Polygon::calculateArea(){
+	float area = 0.0;
+
+	for ( int i = 0; i < this->size(); ++i )
+	{
+		int j = ( i + 1 ) % this->size();
+		area += 0.5 * ( points [i].x * points [j].y - points [j].x * points [i].y );
+	}
+	this->area = area;
+}
+
+void Polygon::calculateBarycenter(){
+	float xsum = 0.0;
+	float ysum = 0.0;
+	float area = 0.0;
+	for ( int i = 0; i < this->size() - 1; i++ )
+	{
+		float areaSum = ( points [i].x * points [i + 1].y ) - ( points [i + 1].x * points [i].y );
+
+		xsum += ( points [i].x + points [i + 1].x ) * areaSum;
+		ysum += ( points [i].y + points [i + 1].y ) * areaSum;
+	}
+
+	barycenter = Point<float>( xsum / ( area * 6 ), ysum / ( area * 6 ) );
 }
