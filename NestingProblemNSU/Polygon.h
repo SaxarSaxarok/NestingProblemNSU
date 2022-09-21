@@ -20,6 +20,8 @@ public:
 
 	std::pair<float, float> getMinXY();
 
+	std::vector<std::vector<int>> getMatrixRepresentation( float h );
+
 	Polygon* shiftToOrigin();
 };
 

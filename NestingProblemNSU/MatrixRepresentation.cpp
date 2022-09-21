@@ -1,6 +1,7 @@
 #include "MatrixRepresentation.h"
 #include <iostream>
 
+
 MatrixRepresentation::MatrixRepresentation( Polygon polygon, float h ){
 	float accuracy = h * 0.000001;
 	polygon.shiftToOrigin();
