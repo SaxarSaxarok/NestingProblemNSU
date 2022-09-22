@@ -39,13 +39,15 @@ Point<float> Polygon::barycenter() const{
 		float ysum = 0.0;
 		for ( int i = 0; i < this->size() - 1; i++ )
 		{
-			float areaSum = ( points [i].x * points [i + 1].y ) - ( points [i + 1].x * points [i].y );
+			float areaSum =  points [i].x * points [i + 1].y  -  points [i + 1].x * points [i].y ;
 
 			xsum += ( points [i].x + points [i + 1].x ) * areaSum;
 			ysum += ( points [i].y + points [i + 1].y ) * areaSum;
 		}
+		xsum += ( points [this->size() - 1].x + points [0].x ) * points [this->size() - 1].x * points [0].y - points [0].x * points [this->size() - 1].y;
+		ysum += ( points [0].y + points [this->size() - 1].y ) * points [0].x * points [this->size() - 1].y - points [this->size() - 1].x * points [0].y;
 
-		barycenterValue = new Point<float>( xsum / ( area() * 6 ), ysum / ( area() * 6 ) );
+		barycenterValue = new Point<float>( xsum / ( -area() * 6 ), ysum / ( -area() * 6 ) );
 	}
 	return *barycenterValue;
 }
@@ -53,13 +55,14 @@ Point<float> Polygon::barycenter() const{
 float Polygon::area() const{
 	if ( areaValue == nullptr )
 	{
-		float area = 0.0;
+		float area = 0.0f;
 
-		for ( int i = 0; i < this->size(); ++i )
+		for ( int i = 0; i < this->size()-1; i++ )
 		{
-			int j = ( i + 1 ) % this->size();
-			area += 0.5 * ( points [i].x * points [j].y - points [j].x * points [i].y );
+			area += points[i].x *points[i+1].y - points[i+1].x*points[i].y;
 		}
+		area += points [this->size() - 1].x * points [0].y - points [this->size() - 1].y * points [0].x;
+		area = abs(area)/2;
 		areaValue = new float (area) ;
 	}
 	return *areaValue;

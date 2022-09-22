@@ -13,5 +13,7 @@ int main(){
 
 	float area = polygon.area();
 	auto point = polygon.barycenter();
+	polygon.shiftToOrigin();
+	point = polygon.barycenter();
 	Item item = Item( polygon , 2.6);
 }
