@@ -11,5 +11,7 @@ int main(){
 	std::vector<Point<float>> vec {P1,P2,P3,P4};
 	Polygon polygon( vec );
 
+	float area = polygon.area();
+	auto point = polygon.barycenter();
 	Item item = Item( polygon , 2.6);
 }

@@ -4,51 +4,84 @@
 #include <algorithm>
 #include <iostream>
 
-Polygon::Polygon( const std::vector<Point<float>>& points ){
+
+Polygon::Polygon(): barycenterValue( nullptr ), areaValue( nullptr ){}
+
+Polygon::Polygon( const std::vector<Point<float>>& points ): barycenterValue( nullptr ), areaValue( nullptr ){
 	for ( auto& point : points )
 	{
 		this->points.push_back( point );
 	}
-	calculateArea();
-	calculateBarycenter();
 }
 
-Polygon::Polygon( const Polygon& polygon_ ){
+Polygon::Polygon( const Polygon& polygon_ ): barycenterValue( nullptr ), areaValue( nullptr ){
 	for ( auto& point : polygon_.points )
 	{
 		this->points.push_back( point );
 	}
-	calculateArea();
-	calculateBarycenter();
 }
 
-Point<float> Polygon::operator[]( int i ){
+Point<float> Polygon::operator[]( int i ) const{
 	if ( i > -1 && i < this->points.size() )
 		return this->points [i];
 	else
 		throw std::out_of_range( "The index is out of range" );
 }
 
-int Polygon::size(){
+int Polygon::size() const{
 	return points.size();
+}
+
+Point<float> Polygon::barycenter() const{
+	if ( barycenterValue == nullptr )
+	{
+		float xsum = 0.0;
+		float ysum = 0.0;
+		for ( int i = 0; i < this->size() - 1; i++ )
+		{
+			float areaSum = ( points [i].x * points [i + 1].y ) - ( points [i + 1].x * points [i].y );
+
+			xsum += ( points [i].x + points [i + 1].x ) * areaSum;
+			ysum += ( points [i].y + points [i + 1].y ) * areaSum;
+		}
+
+		barycenterValue = new Point<float>( xsum / ( area() * 6 ), ysum / ( area() * 6 ) );
+	}
+	return *barycenterValue;
+}
+
+float Polygon::area() const{
+	if ( areaValue == nullptr )
+	{
+		float area = 0.0;
+
+		for ( int i = 0; i < this->size(); ++i )
+		{
+			int j = ( i + 1 ) % this->size();
+			area += 0.5 * ( points [i].x * points [j].y - points [j].x * points [i].y );
+		}
+		areaValue = new float (area) ;
+	}
+	return *areaValue;
 }
 
 
 
 
 Polygon* Polygon::shiftToOrigin(){
-	std::pair<float, float> minXY = getMinXY();
+	std::pair<float, float> minXY = MinXY();
 
 	for ( auto& point : points )
 	{
 		point.x -= minXY.first;
 		point.y -= minXY.second;
 	}
-	barycenter = Point<float>( barycenter.x - minXY.first, barycenter.y - minXY.second );
+	delete barycenterValue; // The value has been changed
+	barycenterValue = nullptr;
 	return this;
 }
 
-std::pair<float, float> Polygon::getMaxXY(){
+std::pair<float, float> Polygon::MaxXY() const{
 	float maxX = points [0].x;
 	float maxY = points [0].y;
 
@@ -61,7 +94,7 @@ std::pair<float, float> Polygon::getMaxXY(){
 	return std::pair<float, float>( maxX, maxY );
 }
 
-std::pair<float, float> Polygon::getMinXY(){
+std::pair<float, float> Polygon::MinXY() const{
 	float minX = points [0].x;
 	float minY = points [0].y;
 
@@ -77,8 +110,8 @@ std::pair<float, float> Polygon::getMinXY(){
 std::vector<std::vector<int>> Polygon::getMatrixRepresentation( float h ){
 	float accuracy = h * 0.000001f;
 	this->shiftToOrigin();
-	auto maxXY = this->getMaxXY();
-	auto minXY = this->getMinXY();
+	auto maxXY = this->MaxXY();
+	auto minXY = this->MinXY();
 	float xSideLen = maxXY.first - minXY.first;
 	float ySideLen = maxXY.second - minXY.second;
 	int nX = ceil( xSideLen / h );
@@ -209,30 +242,4 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( float h ){
 	for ( auto i = 0; i < matrix.size(); i++ ) matrix [i].pop_back();
 
 	return matrix;
-}
-
-void Polygon::calculateArea(){
-	float area = 0.0;
-
-	for ( int i = 0; i < this->size(); ++i )
-	{
-		int j = ( i + 1 ) % this->size();
-		area += 0.5 * ( points [i].x * points [j].y - points [j].x * points [i].y );
-	}
-	this->area = area;
-}
-
-void Polygon::calculateBarycenter(){
-	float xsum = 0.0;
-	float ysum = 0.0;
-	float area = 0.0;
-	for ( int i = 0; i < this->size() - 1; i++ )
-	{
-		float areaSum = ( points [i].x * points [i + 1].y ) - ( points [i + 1].x * points [i].y );
-
-		xsum += ( points [i].x + points [i + 1].x ) * areaSum;
-		ysum += ( points [i].y + points [i + 1].y ) * areaSum;
-	}
-
-	barycenter = Point<float>( xsum / ( area * 6 ), ysum / ( area * 6 ) );
 }

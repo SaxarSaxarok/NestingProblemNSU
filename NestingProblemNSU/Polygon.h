@@ -3,32 +3,32 @@
 #include<vector>
 
 class Polygon{
-public:
-	Point<float> barycenter=0;
-	float area=0;
-
 private:
 	std::vector<Point<float>> points;
 
 public:
+	
 
-	Polygon(){};
+	Polygon();
 	Polygon( const std::vector<Point<float>>& points_ );
 	Polygon( const Polygon& polygon_ );
 
-	Point<float> operator [] ( int index );
 
-	int size();
+	Point<float> barycenter() const;
+	float area() const;
+	Point<float> operator [] ( int index ) const;
 
-	std::pair<float, float> getMaxXY();
-	std::pair<float, float> getMinXY();
+	int size() const;
+
+	std::pair<float, float> MaxXY() const;
+	std::pair<float, float> MinXY() const;
 
 	std::vector<std::vector<int>> getMatrixRepresentation( float h );
 
 	Polygon* shiftToOrigin();
 
-	void calculateBarycenter();
-
-	void calculateArea();
+private:
+	mutable Point<float>* barycenterValue;
+	mutable float* areaValue;
 };
 
