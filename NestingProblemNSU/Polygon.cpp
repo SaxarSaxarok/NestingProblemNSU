@@ -79,8 +79,8 @@ Polygon* Polygon::shiftToOrigin(){
 		point.x -= minXY.first;
 		point.y -= minXY.second;
 	}
-	delete barycenterValue; // The value has been changed
-	barycenterValue = nullptr;
+	barycenterValue->x -= minXY.first;
+	barycenterValue->y -= minXY.second;
 	return this;
 }
 
