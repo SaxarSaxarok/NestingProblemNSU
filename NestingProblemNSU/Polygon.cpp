@@ -58,15 +58,16 @@ Point<float> Polygon::barycenter() const{
 	{
 		float xsum = 0.0;
 		float ysum = 0.0;
-		for ( int i = 0; i < this->size() - 1; i++ )
+		int size = this->size();
+		for ( int i = 0; i < size - 1; i++ )
 		{
 			float areaSum = points [i].x * points [i + 1].y - points [i + 1].x * points [i].y;
 
 			xsum += ( points [i].x + points [i + 1].x ) * areaSum;
 			ysum += ( points [i].y + points [i + 1].y ) * areaSum;
 		}
-		xsum += ( points [this->size() - 1].x + points [0].x ) * points [this->size() - 1].x * points [0].y - points [0].x * points [this->size() - 1].y;
-		ysum += ( points [0].y + points [this->size() - 1].y ) * points [0].x * points [this->size() - 1].y - points [this->size() - 1].x * points [0].y;
+		xsum += ( points [size - 1].x + points [0].x ) * points [size - 1].x * points [0].y - points [0].x * points [size - 1].y;
+		ysum += ( points [0].y + points [size - 1].y ) * points [0].x * points [size - 1].y - points [size - 1].x * points [0].y;
 
 		barycenterValue = new Point<float>( xsum / ( -area() * 6 ), ysum / ( -area() * 6 ) );
 	}
@@ -77,12 +78,13 @@ float Polygon::area() const{
 	if ( areaValue == nullptr )
 	{
 		float area = 0.0f;
+		int size = this->size();
 
-		for ( int i = 0; i < this->size() - 1; i++ )
+		for ( int i = 0; i < size - 1; i++ )
 		{
 			area += points [i].x * points [i + 1].y - points [i + 1].x * points [i].y;
 		}
-		area += points [this->size() - 1].x * points [0].y - points [this->size() - 1].y * points [0].x;
+		area += points [size - 1].x * points [0].y - points [size - 1].y * points [0].x;
 		area = abs( area ) / 2;
 		areaValue = new float( area );
 	}
@@ -140,14 +142,15 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( float h ){
 	float ySideLen = maxXY.second - minXY.second;
 	int nX = ceil( xSideLen / h );
 	int nY = ceil( ySideLen / h );
+	int size = this->size();
 
 	std::vector<std::vector<int>> edges( nX + 1, std::vector<int>( nY, 0 ) );
 
 	for ( auto k = 0; k < nY; k++ )
 	{
-		for ( auto i0 = 0; i0 < this->size(); i0++ )
+		for ( auto i0 = 0; i0 < size; i0++ )
 		{
-			int i1 = ( i0 + 1 ) % this->size();
+			int i1 = ( i0 + 1 ) % size;
 			if ( ( std::min( points [i0].y, points [i1].y ) <= k * h ) &&
 				 k * h <= std::max( points [i0].y, points [i1].y ) &&
 				 abs( points [i1].y - points [i0].y ) > FLT_EPSILON )
@@ -159,11 +162,11 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( float h ){
 
 				if ( abs( xP - points [i0].x ) < FLT_EPSILON )
 				{
-					if ( ( points [i1].y - yP ) * ( points [( ( ( i0 - 1 ) % this->size() ) + this->size() ) % this->size()].y - yP ) < 0 )
+					if ( ( points [i1].y - yP ) * ( points [( ( ( i0 - 1 ) % size ) + size ) % size].y - yP ) < 0 )
 					{
 						edges [floor( xP / h + accuracy )][k] += 1;
 					}
-					else if ( ( points [i1].y - yP ) * ( points [( ( ( i0 - 1 ) % this->size() ) + this->size() ) % this->size()].y - yP ) > 0 )
+					else if ( ( points [i1].y - yP ) * ( points [( ( ( i0 - 1 ) % size ) + size ) % size].y - yP ) > 0 )
 					{
 						edges [floor( xP / h + accuracy )][k] += 2;
 					}
@@ -201,9 +204,9 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( float h ){
 		}
 	}
 
-	for ( auto i = 0; i < this->size(); i++ )
+	for ( auto i = 0; i < size; i++ )
 	{
-		int j = ( i + 1 ) % this->size();
+		int j = ( i + 1 ) % size;
 		Point<float> i1( points [i] );
 		Point<float> i2( points [j] );
 
