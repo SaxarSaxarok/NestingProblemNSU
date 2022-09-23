@@ -21,8 +21,8 @@ Polygon::Polygon( const Polygon& polygon_ ): barycenterValue( nullptr ), areaVal
 	}
 }
 
-Polygon::Polygon( Polygon&& old ): barycenterValue( nullptr ), areaValue( nullptr ){
-	this->points.swap( old.points );
+Polygon::Polygon( Polygon&& polygon) noexcept : barycenterValue( nullptr ), areaValue( nullptr ){
+	this->points.swap( polygon.points );
 }
 
 Polygon& Polygon::operator = ( const Polygon& polygon ){
@@ -35,7 +35,7 @@ Polygon& Polygon::operator = ( const Polygon& polygon ){
 	return *this;
 }
 
-Polygon& Polygon::operator = ( Polygon&& polygon ){
+Polygon& Polygon::operator = ( Polygon&& polygon ) noexcept{
 	barycenterValue = nullptr;
 	areaValue = nullptr;
 	this->points.swap( polygon.points );

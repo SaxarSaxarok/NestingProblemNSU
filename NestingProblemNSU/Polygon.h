@@ -14,9 +14,9 @@ public:
 	Polygon();
 	Polygon( const std::vector<Point<float>>& points_ );
 	Polygon( const Polygon& polygon_ );
-	Polygon( Polygon&& points );
+	Polygon( Polygon&& points ) noexcept;
 	Polygon& operator = ( const Polygon& );
-	Polygon& operator = ( Polygon&& );
+	Polygon& operator = ( Polygon&& ) noexcept;
 
 	Point<float> barycenter() const;
 	float area() const;
