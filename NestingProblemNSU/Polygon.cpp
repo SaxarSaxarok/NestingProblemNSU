@@ -25,6 +25,23 @@ Polygon::Polygon( Polygon&& old ): barycenterValue( nullptr ), areaValue( nullpt
 	this->points.swap( old.points );
 }
 
+Polygon& Polygon::operator = ( const Polygon& polygon ){
+	barycenterValue = nullptr;
+	areaValue = nullptr;
+	for ( auto& point : polygon.points )
+	{
+		this->points.push_back( point );
+	}
+	return *this;
+}
+
+Polygon& Polygon::operator = ( Polygon&& polygon ){
+	barycenterValue = nullptr;
+	areaValue = nullptr;
+	this->points.swap( polygon.points );
+	return *this;
+}
+
 Point<float> Polygon::operator[]( int i ) const{
 	if ( i > -1 && i < this->points.size() )
 		return this->points [i];

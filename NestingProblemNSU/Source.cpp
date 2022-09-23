@@ -2,6 +2,7 @@
 #include "Point.h"
 #include "Polygon.h"
 #include "Item.h"
+#include <iostream>
 
 int main(){
 	Point<float> P1( 1.0f, 0.0f );
