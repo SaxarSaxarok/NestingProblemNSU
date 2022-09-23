@@ -1,8 +1,8 @@
 #include "Item.h"
 
-Item::Item( Polygon& polygon , float h){
+Item::Item( Polygon& polygon, float h ){
 	this->polygon = polygon;
-	matrix = polygon.getMatrixRepresentation(h);
+	matrix = polygon.getMatrixRepresentation( h );
 	makeShifts();
 }
 
@@ -25,12 +25,12 @@ void Item::makeShifts(){
 			else
 			{
 				if ( beforeValue == 0 ) sum *= -1;
-				shifts[j].push_back( sum );
+				shifts [j].push_back( sum );
 				beforeValue = matrix [j][i];
 				sum = 1;
 			}
 		}
 		if ( beforeValue == 0 ) sum *= -1;
-		shifts[j].push_back( sum );
+		shifts [j].push_back( sum );
 	}
 }

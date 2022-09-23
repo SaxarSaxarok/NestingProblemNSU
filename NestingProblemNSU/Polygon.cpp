@@ -7,7 +7,7 @@
 
 Polygon::Polygon(): barycenterValue( nullptr ), areaValue( nullptr ){}
 
-Polygon::Polygon( const std::vector<Point<float>>& points ): barycenterValue( nullptr ), areaValue( nullptr ){
+Polygon::Polygon( const std::vector<Point<float>>& points ) : barycenterValue( nullptr ), areaValue( nullptr ){
 	for ( auto& point : points )
 	{
 		this->points.push_back( point );
@@ -19,6 +19,10 @@ Polygon::Polygon( const Polygon& polygon_ ): barycenterValue( nullptr ), areaVal
 	{
 		this->points.push_back( point );
 	}
+}
+
+Polygon::Polygon( Polygon&& old ): barycenterValue( nullptr ), areaValue( nullptr ){
+	this->points.swap( old.points );
 }
 
 Point<float> Polygon::operator[]( int i ) const{
@@ -39,7 +43,7 @@ Point<float> Polygon::barycenter() const{
 		float ysum = 0.0;
 		for ( int i = 0; i < this->size() - 1; i++ )
 		{
-			float areaSum =  points [i].x * points [i + 1].y  -  points [i + 1].x * points [i].y ;
+			float areaSum = points [i].x * points [i + 1].y - points [i + 1].x * points [i].y;
 
 			xsum += ( points [i].x + points [i + 1].x ) * areaSum;
 			ysum += ( points [i].y + points [i + 1].y ) * areaSum;
@@ -57,13 +61,13 @@ float Polygon::area() const{
 	{
 		float area = 0.0f;
 
-		for ( int i = 0; i < this->size()-1; i++ )
+		for ( int i = 0; i < this->size() - 1; i++ )
 		{
-			area += points[i].x *points[i+1].y - points[i+1].x*points[i].y;
+			area += points [i].x * points [i + 1].y - points [i + 1].x * points [i].y;
 		}
 		area += points [this->size() - 1].x * points [0].y - points [this->size() - 1].y * points [0].x;
-		area = abs(area)/2;
-		areaValue = new float (area) ;
+		area = abs( area ) / 2;
+		areaValue = new float( area );
 	}
 	return *areaValue;
 }

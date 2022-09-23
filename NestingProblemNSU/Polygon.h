@@ -5,14 +5,16 @@
 class Polygon{
 private:
 	std::vector<Point<float>> points;
+	mutable Point<float>* barycenterValue;
+	mutable float* areaValue;
 
 public:
-	
+
 
 	Polygon();
 	Polygon( const std::vector<Point<float>>& points_ );
 	Polygon( const Polygon& polygon_ );
-
+	Polygon( Polygon&& points );
 
 	Point<float> barycenter() const;
 	float area() const;
@@ -26,9 +28,5 @@ public:
 	std::vector<std::vector<int>> getMatrixRepresentation( float h );
 
 	Polygon* shiftToOrigin();
-
-private:
-	mutable Point<float>* barycenterValue;
-	mutable float* areaValue;
 };
 
