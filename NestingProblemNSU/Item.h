@@ -4,9 +4,9 @@ class Item: public Polygon{
 private:
 	std::vector<std::vector<int>> matrix;
 	std::vector<std::vector<int>> rotationsOfMatrix [4];
-	std::vector<std::vector<int>> rotationsOfShifts [4];
 	int id;
 public:
+	std::vector<std::vector<int>> rotationsOfShifts [4];
 	std::vector<int>orderedIndexes[4];
 
 	Item( int id, std::vector<Point<float>> points, float h );
