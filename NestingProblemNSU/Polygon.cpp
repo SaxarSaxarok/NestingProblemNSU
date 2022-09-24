@@ -143,7 +143,7 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( float h ){
 	int nY = ceil( ySideLen / h );
 	int size = this->size();
 
-	std::vector<std::vector<int>> edges( nX + 1, std::vector<int>( nY, 0 ) );
+	std::vector<std::vector<int>> edges( nY, std::vector<int>( nX+1, 0 ) );
 
 	for ( auto k = 0; k < nY; k++ )
 	{
@@ -163,21 +163,21 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( float h ){
 				{
 					if ( ( points [i1].y - yP ) * ( points [( ( ( i0 - 1 ) % size ) + size ) % size].y - yP ) < 0 )
 					{
-						edges [floor( xP / h + accuracy )][k] += 1;
+						edges [k][floor( xP / h + accuracy )] += 1;
 					}
 					else if ( ( points [i1].y - yP ) * ( points [( ( ( i0 - 1 ) % size ) + size ) % size].y - yP ) > 0 )
 					{
-						edges [floor( xP / h + accuracy )][k] += 2;
+						edges [k][floor( xP / h + accuracy )] += 2;
 					}
 				}
 				else if ( abs( xP - points [i1].x ) > FLT_EPSILON )
 				{
-					edges [floor( xP / h + accuracy )][k] += 1;
+					edges [k][floor( xP / h + accuracy )] += 1;
 				}
 			}
 		}
 	}
-	std::vector<std::vector<int>>matrix( nX + 1, std::vector<int>( nY + 1, 0 ) );
+	std::vector<std::vector<int>>matrix( nY + 1, std::vector<int>( nX + 1, 0 ) );
 
 	for ( auto k = 0; k < nY; k++ )
 	{
@@ -185,20 +185,20 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( float h ){
 
 		for ( auto i = 0; i <= nX; i++ )
 		{
-			if ( ( edges [i][k] % 2 == 0 ) and ( edges [i][k] != 0 ) )
+			if ( ( edges [k][i] % 2 == 0 ) and ( edges [k][i] != 0 ) )
 			{
-				matrix [i][k] = 1;
+				matrix [k][i] = 1;
 			}
-			else if ( edges [i][k] % 2 == 1 )
+			else if ( edges [k][i] % 2 == 1 )
 			{
-				matrix [i][k] = 1;
-				if ( k > 0 ) matrix [i][k - 1] = 1;//Все Верно?
+				matrix [k][i] = 1;
+				if ( k > 0 ) matrix [k - 1][i] = 1;//Все Верно?
 				flag = !flag;
 			}
 			if ( flag )
 			{
-				matrix [i][k] = 1;
-				if ( k > 0 ) matrix [i][k - 1] = 1; //Все верно ?
+				matrix [k][i] = 1;
+				if ( k > 0 ) matrix [k - 1][i] = 1; //Все верно ?
 			}
 		}
 	}
@@ -206,8 +206,8 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( float h ){
 	for ( auto i = 0; i < size; i++ )
 	{
 		int j = ( i + 1 ) % size;
-		Point<float> i1( points [i] );
-		Point<float> i2( points [j] );
+		Point<float> i1( points [j] );
+		Point<float> i2( points [i] );
 
 		Point<int> j1( floor( i1.x / h ), floor( i1.y / h ) );
 		Point<int> j2( floor( i2.x / h ), floor( i2.y / h ) );
@@ -237,7 +237,7 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( float h ){
 		{
 			for ( auto j = 0; j <= abs( j1.x - j2.x ); j++ ) // Было i Не сломается ? 
 			{
-				matrix [p.x][p.y] = 1;
+				matrix [p.y][p.x] = 1;
 				p.x += stepX;
 			}
 		}
@@ -245,7 +245,7 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( float h ){
 		{
 			for ( auto j = 0; j <= abs( j1.x - j2.x ) + abs( j1.y - j2.y ); j++ )
 			{
-				matrix [p.x][p.y] = 1;
+				matrix [p.y][p.x] = 1;
 				if ( j2 != p ) //Аналогично было i
 				{
 					float a = -( i2.x - i1.x ) / ( i2.y - i1.y );
@@ -266,6 +266,13 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( float h ){
 	}
 	matrix.pop_back();
 	for ( auto i = 0; i < matrix.size(); i++ ) matrix [i].pop_back();
-
+	for ( int i = matrix.size()-1; i >= 0; i-- )
+	{
+		for ( int j = 0; j < matrix [i].size(); j++ )
+		{
+			std::cout << matrix [i][j] << ' ';
+		}
+		std::cout << '\n';
+	}
 	return matrix;
 }

@@ -15,6 +15,6 @@ public:
 
 	Pallet( float w, float h, float pixelSize);
 
-	bool placeItem( const Item& item );
+	/*bool placeItem( const Item& item );*/
 };
 
