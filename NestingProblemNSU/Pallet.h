@@ -11,6 +11,7 @@ private:
 	int discreteHeigth;
 	float pixelSize;
 	std::vector<Item> items;
+	std::vector<std::vector<int>> shifts;
 public:
 
 	Pallet( float w, float h, float pixelSize);
