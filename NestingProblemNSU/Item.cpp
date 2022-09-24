@@ -1,12 +1,15 @@
 #include "Item.h"
+#include <algorithm>
 
 Item::Item( int id, std::vector<Point<float>> points, float h ): id( id ), Polygon( points ){
 	matrix = this->getMatrixRepresentation( h );
 	calculateAllRotations();
+	calculateAllOrderedIndexes();
 }
 Item::Item( int id, Polygon polygon, float h ) : id( id ), Polygon( polygon ){
 	matrix = this->getMatrixRepresentation( h );
 	calculateAllRotations();
+	calculateAllOrderedIndexes();
 }
 
 bool Item::operator<( Item const& item ){
@@ -18,14 +21,14 @@ bool Item::operator<=( Item const& item ){
 }
 
 bool Item::operator>( Item const& item ){
-	return !(( *this ) < item);
+	return !( ( *this ) < item );
 }
 
 bool Item::operator>=( Item const& item ){
-	return !((*this)<=item) || this->matrix [0].size() == item.matrix.size() * item.matrix [0].size();
+	return !( ( *this ) <= item ) || this->matrix [0].size() == item.matrix.size() * item.matrix [0].size();
 }
 
-std::vector<std::vector<int>> Item::calculateShifts(std::vector<std::vector<int>> matrix){
+std::vector<std::vector<int>> Item::calculateShifts( std::vector<std::vector<int>> matrix ){
 	std::vector<std::vector<int>> shifts;
 	for ( auto j = 0; j < matrix.size(); j++ )
 	{
@@ -77,4 +80,26 @@ void Item::calculateAllRotations(){
 	rotationsOfMatrix [3] = rotateMatrixBy90( rotationsOfMatrix [2] );
 
 	for ( int i = 0; i < 4; i++ ) rotationsOfShifts [i] = calculateShifts( rotationsOfMatrix [i] );
+}
+
+void Item::calculateAllOrderedIndexes(){
+	for ( int i = 0; i < 4; i++ )
+	{
+		std::vector<std::pair<int, int>> indexAndMaxElement( rotationsOfMatrix [i].size(), std::pair<int, int>( 0, 0 ) );
+
+		for ( int j = 0; j < rotationsOfMatrix [i].size(); j++ )
+		{
+			indexAndMaxElement [j].first = j;
+			indexAndMaxElement [j].second = rotationsOfMatrix [i][j][std::distance( rotationsOfMatrix [i][j].begin(), std::max_element( rotationsOfMatrix [i][j].begin(), rotationsOfMatrix [i][j].end() ) )];
+		}
+		sort( indexAndMaxElement.begin(), indexAndMaxElement.end(), []( std::pair<int, int> a, std::pair<int, int> b ) {
+			return ( a.second > b.second );
+		} );
+		orderedIndexes [i] = std::vector<int>( rotationsOfMatrix [i].size() );
+
+		for ( int j = 0; j < orderedIndexes [i].size(); j++ )
+		{
+			orderedIndexes [i][j] = indexAndMaxElement [j].first;
+		}
+	}
 }
