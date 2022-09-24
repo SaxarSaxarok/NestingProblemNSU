@@ -11,10 +11,9 @@ int main(){
 	Point<float> P4( 2.1f, 0.0f );
 	std::vector<Point<float>> vec {P1,P2,P3,P4};
 	Polygon polygon( vec );
+	Item item1( 1, vec, 2.6 );
+	Item item2( 2, polygon, 2.6 );
 
-	float area = polygon.area();
-	auto point = polygon.barycenter();
-	polygon.shiftToOrigin();
-	point = polygon.barycenter();
-	Item item = Item( polygon, 2.6 );
+	float area = item1.area();
+	auto point = item2.barycenter();
 }
