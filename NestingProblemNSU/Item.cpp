@@ -9,6 +9,22 @@ Item::Item( int id, Polygon polygon, float h ) : id( id ), Polygon( polygon ){
 	calculateAllRotations();
 }
 
+bool Item::operator<( Item const& item ){
+	return this->matrix.size() * this->matrix [0].size() - item.matrix.size() * item.matrix [0].size() < 0;
+}
+
+bool Item::operator<=( Item const& item ){
+	return ( *this ) < item || matrix.size() * this->matrix [0].size() == item.matrix.size() * item.matrix [0].size();
+}
+
+bool Item::operator>( Item const& item ){
+	return !(( *this ) < item);
+}
+
+bool Item::operator>=( Item const& item ){
+	return !((*this)<=item) || this->matrix [0].size() == item.matrix.size() * item.matrix [0].size();
+}
+
 std::vector<std::vector<int>> Item::calculateShifts(std::vector<std::vector<int>> matrix){
 	std::vector<std::vector<int>> shifts;
 	for ( auto j = 0; j < matrix.size(); j++ )
