@@ -1,5 +1,6 @@
 #include "Item.h"
 #include <algorithm>
+#include <iostream>
 
 Item::Item( int id, std::vector<Point<float>> points, float h ): id( id ), Polygon( points ){
 	matrix = this->getMatrixRepresentation( h );
@@ -12,19 +13,19 @@ Item::Item( int id, Polygon polygon, float h ) : id( id ), Polygon( polygon ){
 	calculateAllOrderedIndexes();
 }
 
-bool Item::operator<( Item const& item ){
+bool Item::operator<( Item const& item ) const{
 	return this->matrix.size() * this->matrix [0].size() - item.matrix.size() * item.matrix [0].size() < 0;
 }
 
-bool Item::operator<=( Item const& item ){
+bool Item::operator<=( Item const& item ) const{
 	return ( *this ) < item || matrix.size() * this->matrix [0].size() == item.matrix.size() * item.matrix [0].size();
 }
 
-bool Item::operator>( Item const& item ){
+bool Item::operator>( Item const& item ) const{
 	return !( ( *this ) < item );
 }
 
-bool Item::operator>=( Item const& item ){
+bool Item::operator>=( Item const& item ) const{
 	return !( ( *this ) <= item ) || this->matrix [0].size() == item.matrix.size() * item.matrix [0].size();
 }
 
@@ -80,6 +81,20 @@ void Item::calculateAllRotations(){
 	rotationsOfMatrix [3] = rotateMatrixBy90( rotationsOfMatrix [2] );
 
 	for ( int i = 0; i < 4; i++ ) rotationsOfShifts [i] = calculateShifts( rotationsOfMatrix [i] );
+
+	for ( int i = 0; i < 4; i++ )
+	{
+		std::cout << "Rotation number " << i<<'\n';
+		for ( int j = 0; j < rotationsOfShifts [i].size(); j++ )
+		{
+			for ( int k = 0; k < rotationsOfShifts [i][j].size(); k++ )
+			{
+				std::cout << rotationsOfShifts [i][j][k] << ' ';
+			}
+			std::cout << '\n';
+		}
+	}
+	std::cout << '\n';
 }
 
 void Item::calculateAllOrderedIndexes(){
@@ -90,16 +105,27 @@ void Item::calculateAllOrderedIndexes(){
 		for ( int j = 0; j < rotationsOfMatrix [i].size(); j++ )
 		{
 			indexAndMaxElement [j].first = j;
-			indexAndMaxElement [j].second = rotationsOfMatrix [i][j][std::distance( rotationsOfMatrix [i][j].begin(), std::max_element( rotationsOfMatrix [i][j].begin(), rotationsOfMatrix [i][j].end() ) )];
+			indexAndMaxElement [j].second = rotationsOfShifts [i][j][std::distance( rotationsOfShifts [i][j].begin(), std::max_element( rotationsOfShifts [i][j].begin(), rotationsOfShifts [i][j].end() ) )];
 		}
 		sort( indexAndMaxElement.begin(), indexAndMaxElement.end(), []( std::pair<int, int> a, std::pair<int, int> b ) {
 			return ( a.second > b.second );
 		} );
-		orderedIndexes [i] = std::vector<int>( rotationsOfMatrix [i].size() );
+		orderedIndexes [i] = std::vector<int>( rotationsOfShifts [i].size() );
 
 		for ( int j = 0; j < orderedIndexes [i].size(); j++ )
 		{
 			orderedIndexes [i][j] = indexAndMaxElement [j].first;
 		}
+	}
+
+	for ( int i = 0; i < 4; i++ )
+	{
+		std::cout << "Rotation on " << i * 90 << " degrees"<<'\n'<<"Number of indexes: ";
+
+		for ( int j = 0; j < orderedIndexes [i].size(); j++ )
+		{
+			std::cout << orderedIndexes [i][j] << ' ';
+		}
+		std::cout << '\n';
 	}
 }

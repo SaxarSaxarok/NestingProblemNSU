@@ -4,7 +4,7 @@
 
 Packer::Packer( float w, float h, float pixelSize, const std::vector<Item>& items ): width( w ), height( h ), items( items ), pixelSize( pixelSize ){
 	pallets.push_back( Pallet( width, height, pixelSize ) );
-	sort( items.begin(), items.end(), []( Item a, Item b ) {
+	sort( this->items.begin(), this->items.end(), []( Item const &a, Item const &b ) -> bool {
 		return ( a > b );
 		} );
 }

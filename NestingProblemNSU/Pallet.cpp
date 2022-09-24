@@ -20,6 +20,7 @@ bool Pallet::placeItem( const Item& item ){
 		{
 		}
 	}
+	return true;
 }
 
 

@@ -11,10 +11,11 @@ public:
 
 	Item( int id, std::vector<Point<float>> points, float h );
 	Item( int id, Polygon polygon, float h );
-	bool operator< (Item const& item );
-	bool operator<= ( Item const& item );
-	bool operator> ( Item const& item );
-	bool operator>= ( Item const& item );
+
+	bool operator< (Item const& item ) const;
+	bool operator<= ( Item const& item ) const;
+	bool operator> ( Item const& item ) const;
+	bool operator>= ( Item const& item ) const;
 
 private:
 	std::vector < std::vector<int>> calculateShifts( std::vector<std::vector<int>> matrix );

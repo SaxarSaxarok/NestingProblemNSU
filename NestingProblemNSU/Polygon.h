@@ -3,7 +3,7 @@
 #include<vector>
 
 class Polygon{
-private:
+protected:
 	std::vector<Point<float>> points;
 	mutable Point<float>* barycenterValue;
 	mutable float* areaValue;
