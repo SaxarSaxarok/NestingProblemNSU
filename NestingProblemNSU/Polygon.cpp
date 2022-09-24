@@ -21,7 +21,7 @@ Polygon::Polygon( const Polygon& polygon_ ): barycenterValue( nullptr ), areaVal
 	}
 }
 
-Polygon::Polygon( Polygon&& polygon) noexcept : barycenterValue( nullptr ), areaValue( nullptr ){
+Polygon::Polygon( Polygon&& polygon ) noexcept: barycenterValue( nullptr ), areaValue( nullptr ){
 	this->points.swap( polygon.points );
 }
 
@@ -143,7 +143,7 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( float h ){
 	int nY = ceil( ySideLen / h );
 	int size = this->size();
 
-	std::vector<std::vector<int>> edges( nY, std::vector<int>( nX+1, 0 ) );
+	std::vector<std::vector<int>> edges( nY, std::vector<int>( nX + 1, 0 ) );
 
 	for ( auto k = 0; k < nY; k++ )
 	{
@@ -266,13 +266,5 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( float h ){
 	}
 	matrix.pop_back();
 	for ( auto i = 0; i < matrix.size(); i++ ) matrix [i].pop_back();
-	for ( int i = matrix.size()-1; i >= 0; i-- )
-	{
-		for ( int j = 0; j < matrix [i].size(); j++ )
-		{
-			std::cout << matrix [i][j] << ' ';
-		}
-		std::cout << '\n';
-	}
 	return matrix;
 }
