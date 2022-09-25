@@ -4,91 +4,98 @@
 #include <algorithm>
 #include <iostream>
 
+Polygon::Polygon(): barycenterValue_( nullptr ), areaValue_( nullptr ){}
 
-Polygon::Polygon(): barycenterValue( nullptr ), areaValue( nullptr ){}
-
-Polygon::Polygon( const std::vector<Point<float>>& points ) : barycenterValue( nullptr ), areaValue( nullptr ){
-	for ( auto& point : points )
+Polygon::Polygon( const std::vector<Point<float>>& points_ ) : barycenterValue_( nullptr ), areaValue_( nullptr ){
+	for ( auto& point : points_ )
 	{
-		this->points.push_back( point );
+		this->points_.push_back( point );
 	}
 }
 
-Polygon::Polygon( const Polygon& polygon_ ): barycenterValue( nullptr ), areaValue( nullptr ){
-	for ( auto& point : polygon_.points )
+Polygon::Polygon( const Polygon& polygon_ ): barycenterValue_( nullptr ), areaValue_( nullptr ){
+	for ( auto& point : polygon_.points_ )
 	{
-		this->points.push_back( point );
+		this->points_.push_back( point );
 	}
 }
 
-Polygon::Polygon( Polygon&& polygon ) noexcept: barycenterValue( nullptr ), areaValue( nullptr ){
-	this->points.swap( polygon.points );
+Polygon::Polygon( Polygon&& polygon ) noexcept: barycenterValue_( nullptr ), areaValue_( nullptr ){
+	this->points_.swap( polygon.points_ );
 }
 
 Polygon& Polygon::operator = ( const Polygon& polygon ){
-	barycenterValue = nullptr;
-	areaValue = nullptr;
-	for ( auto& point : polygon.points )
+	barycenterValue_ = nullptr;
+	areaValue_ = nullptr;
+	for ( auto& point : polygon.points_ )
 	{
-		this->points.push_back( point );
+		this->points_.push_back( point );
 	}
 	return *this;
 }
 
 Polygon& Polygon::operator = ( Polygon&& polygon ) noexcept{
-	barycenterValue = nullptr;
-	areaValue = nullptr;
-	this->points.swap( polygon.points );
+	barycenterValue_ = nullptr;
+	areaValue_ = nullptr;
+	this->points_.swap( polygon.points_ );
 	return *this;
 }
 
 Point<float> Polygon::operator[]( int i ) const{
-	if ( i > -1 && i < this->points.size() )
-		return this->points [i];
+	if ( i > -1 && i < this->points_.size() )
+		return this->points_ [i];
 	else
 		throw std::out_of_range( "The index is out of range" );
 }
 
 int Polygon::size() const{
-	return points.size();
+	return points_.size();
+}
+
+void Polygon::moveTo( Point<float> vector ){
+	for ( auto& point : points_ )
+	{
+		point.x += vector.x;
+		point.y += vector.y;
+	}
 }
 
 Point<float> Polygon::barycenter() const{
-	if ( barycenterValue == nullptr )
+	if ( barycenterValue_ == nullptr )
 	{
 		float xsum = 0.0;
 		float ysum = 0.0;
 		int size = this->size();
 		for ( int i = 0; i < size - 1; i++ )
 		{
-			float areaSum = points [i].x * points [i + 1].y - points [i + 1].x * points [i].y;
+			float areaSum = points_ [i].x * points_ [i + 1].y - points_ [i + 1].x * points_ [i].y;
 
-			xsum += ( points [i].x + points [i + 1].x ) * areaSum;
-			ysum += ( points [i].y + points [i + 1].y ) * areaSum;
+			xsum += ( points_ [i].x + points_ [i + 1].x ) * areaSum;
+			ysum += ( points_ [i].y + points_ [i + 1].y ) * areaSum;
 		}
-		xsum += ( points [size - 1].x + points [0].x ) * points [size - 1].x * points [0].y - points [0].x * points [size - 1].y;
-		ysum += ( points [0].y + points [size - 1].y ) * points [0].x * points [size - 1].y - points [size - 1].x * points [0].y;
+		xsum += ( points_ [size - 1].x + points_ [0].x ) * points_ [size - 1].x * points_ [0].y - points_ [0].x * points_ [size - 1].y;
+		ysum += ( points_ [0].y + points_ [size - 1].y ) * points_ [0].x * points_ [size - 1].y - points_ [size - 1].x * points_ [0].y;
 
-		barycenterValue = new Point<float>( xsum / ( -area() * 6 ), ysum / ( -area() * 6 ) );
+		barycenterValue_ = new Point<float>( xsum / ( -area() * 6 ), ysum / ( -area() * 6 ) );
 	}
-	return *barycenterValue;
+	return *barycenterValue_;
 }
 
 float Polygon::area() const{
-	if ( areaValue == nullptr )
+	if ( areaValue_ == nullptr )
 	{
 		float area = 0.0f;
 		int size = this->size();
 
 		for ( int i = 0; i < size - 1; i++ )
 		{
-			area += points [i].x * points [i + 1].y - points [i + 1].x * points [i].y;
+			area += points_ [i].x * points_ [i + 1].y - points_ [i + 1].x * points_ [i].y;
 		}
-		area += points [size - 1].x * points [0].y - points [size - 1].y * points [0].x;
+		area += points_ [size - 1].x * points_ [0].y - points_ [size - 1].y * points_ [0].x;
 		area = abs( area ) / 2;
-		areaValue = new float( area );
+		areaValue_ = new float( area );
 	}
-	return *areaValue;
+	return *areaValue_;
 }
 
 
@@ -97,20 +104,20 @@ float Polygon::area() const{
 Polygon* Polygon::shiftToOrigin(){
 	std::pair<float, float> minXY = MinXY();
 
-	for ( auto& point : points )
+	for ( auto& point : points_ )
 	{
 		point.x -= minXY.first;
 		point.y -= minXY.second;
 	}
-	barycenterValue = nullptr;
+	barycenterValue_ = nullptr;
 	return this;
 }
 
 std::pair<float, float> Polygon::MaxXY() const{
-	float maxX = points [0].x;
-	float maxY = points [0].y;
+	float maxX = points_ [0].x;
+	float maxY = points_ [0].y;
 
-	for ( auto& point : points )
+	for ( auto& point : points_ )
 	{
 		if ( point.x > maxX ) maxX = point.x;
 		if ( point.y > maxY ) maxY = point.y;
@@ -120,10 +127,10 @@ std::pair<float, float> Polygon::MaxXY() const{
 }
 
 std::pair<float, float> Polygon::MinXY() const{
-	float minX = points [0].x;
-	float minY = points [0].y;
+	float minX = points_ [0].x;
+	float minY = points_ [0].y;
 
-	for ( auto& point : points )
+	for ( auto& point : points_ )
 	{
 		if ( point.x < minX ) minX = point.x;
 		if ( point.y < minY ) minY = point.y;
@@ -150,27 +157,27 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( float h ){
 		for ( auto i0 = 0; i0 < size; i0++ )
 		{
 			int i1 = ( i0 + 1 ) % size;
-			if ( ( std::min( points [i0].y, points [i1].y ) <= k * h ) &&
-				 k * h <= std::max( points [i0].y, points [i1].y ) &&
-				 abs( points [i1].y - points [i0].y ) > FLT_EPSILON )
+			if ( ( std::min( points_ [i0].y, points_ [i1].y ) <= k * h ) &&
+				 k * h <= std::max( points_ [i0].y, points_ [i1].y ) &&
+				 abs( points_ [i1].y - points_ [i0].y ) > FLT_EPSILON )
 			{
-				float a = -( points [i1].x - points [i0].x ) / ( points [i1].y - points [i0].y );
-				float b = -points [i0].x - points [i0].y * a;
+				float a = -( points_ [i1].x - points_ [i0].x ) / ( points_ [i1].y - points_ [i0].y );
+				float b = -points_ [i0].x - points_ [i0].y * a;
 				float yP = k * h;
 				float xP = -b - a * k * h;
 
-				if ( abs( xP - points [i0].x ) < FLT_EPSILON )
+				if ( abs( xP - points_ [i0].x ) < FLT_EPSILON )
 				{
-					if ( ( points [i1].y - yP ) * ( points [( ( ( i0 - 1 ) % size ) + size ) % size].y - yP ) < 0 )
+					if ( ( points_ [i1].y - yP ) * ( points_ [( ( ( i0 - 1 ) % size ) + size ) % size].y - yP ) < 0 )
 					{
 						edges [k][floor( xP / h + accuracy )] += 1;
 					}
-					else if ( ( points [i1].y - yP ) * ( points [( ( ( i0 - 1 ) % size ) + size ) % size].y - yP ) > 0 )
+					else if ( ( points_ [i1].y - yP ) * ( points_ [( ( ( i0 - 1 ) % size ) + size ) % size].y - yP ) > 0 )
 					{
 						edges [k][floor( xP / h + accuracy )] += 2;
 					}
 				}
-				else if ( abs( xP - points [i1].x ) > FLT_EPSILON )
+				else if ( abs( xP - points_ [i1].x ) > FLT_EPSILON )
 				{
 					edges [k][floor( xP / h + accuracy )] += 1;
 				}
@@ -206,8 +213,8 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( float h ){
 	for ( auto i = 0; i < size; i++ )
 	{
 		int j = ( i + 1 ) % size;
-		Point<float> i1( points [j] );
-		Point<float> i2( points [i] );
+		Point<float> i1( points_ [j] );
+		Point<float> i2( points_ [i] );
 
 		Point<int> j1( floor( i1.x / h ), floor( i1.y / h ) );
 		Point<int> j2( floor( i2.x / h ), floor( i2.y / h ) );

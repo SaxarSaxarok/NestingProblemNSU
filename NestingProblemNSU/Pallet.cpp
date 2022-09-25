@@ -1,70 +1,272 @@
 #include "Pallet.h"
+#include <iostream>
 
 
-Pallet::Pallet( float w, float h, float pixelSize ): width( w ), heigth( h ), pixelSize( pixelSize ){
-	discreteWidth = floor( width / pixelSize );
-	discreteHeigth = floor( heigth / pixelSize );
-	shifts = std::vector<std::vector<int>>( discreteHeigth, std::vector<int>( 1, -discreteWidth ) );//Верно ?
+Pallet::Pallet( float w, float h, float pixelSize ): width_( w ), heigth_( h ), pixelSize_( pixelSize ){
+	discreteWidth_ = ceil( width_ / pixelSize );
+	discreteHeigth_ = ceil( heigth_ / pixelSize );
+	shifts_ = std::vector<std::vector<int>>( discreteHeigth_, std::vector<int>( 1, -discreteWidth_ ) );//Верно ?
 }
 
-bool Pallet::placeItem( const Item& item ){
+bool Pallet::packItem( Item& item ){
 
-	int optimalX = 0;
-	int optomalY = 0;
-
+	int optimalX = INT_MAX;
+	int optimalY = INT_MAX;
+	int optimalRotation = 0;
+	bool isPlaced = false;
 	for ( int i = 0; i < 4; i++ )
 	{
-		int minYindex = 0;
-		int minXindex = 0;
-		bool isPlaced = false;
-		while ( !isPlaced )
+		int x = 0, y = 0;
+		item.currentRotation( i );
+		isPlaced = findPlacePosition( item, x, y );
+
+		if ( optimalY > y || ( optimalY == y && optimalX > x ) )
 		{
-			for ( auto index : item.orderedIndexes [i] )
-			{
-				if ( !findFirstColumnAndRowForItemRow( index, item.rotationsOfShifts [i][index], minYindex, minXindex ) ) return false; //Сразу убрали все ненужные случаи когда не было места, что какая-то строка не влазила
-			}
-			isCanPlace( item, minXindex, minYindex ); // Проверить можно ли с такими дискретными координатами разместить, если нет, то демаем нужные сдвиг обновляя в случае чего минимальны X/Y и снова запуская то что выше
+			optimalY = y;
+			optimalX = x;
+			optimalRotation = i;
 		}
 	}
+	item.currentRotation( optimalRotation );
+	item.rotate();
+
+	item.moveTo( Point<float>( optimalX * pixelSize_, optimalY * pixelSize_ ) );
+	placeItem(item,optimalX,optimalY);
+	std::cout << '\n';
+	std::cout << '\n';
+	for ( int i = 0; i < shifts_.size(); i++ )
+	{
+		for ( int j = 0; j < shifts_ [i].size(); j++ )
+		{
+			std::cout << shifts_ [i][j] << ' ';
+		}
+		std::cout << '\n';
+		std::cout << '\n';
+	}
+	items_.push_back( item );
 	return true;
 }
 
+bool Pallet::findPlacePosition( Item& item, int& optimalX, int& optimalY ){
+	optimalX = 0;
+	optimalY = 0;
+	int shift = 0;
+	int badLine = 0;
+	bool isPlaced = false;
 
-
-bool Pallet::isCanPlace( const Item& item, int& minXindex, int& minYindex ){
-	return true; //TODO
-}
-
-bool Pallet::findFirstColumnAndRowForItemRow( int row, const std::vector<int>& rowShifts, int& currentMinX, int& currentMinY ){
-
-	int rowItemWidth = 0;
-	for ( auto shift : rowShifts )
+	while ( !isPlaced && ( optimalY + item.shifts().size() <= shifts_.size() ) )
 	{
-		rowItemWidth += abs( shift );
-	}
-	if ( rowShifts [0] < 0 ) rowItemWidth += rowShifts [0] + rowShifts [rowShifts.size() - 1];
-
-	while ( true )
-	{
-		int x = 0;
-
-		for ( auto shift : shifts [row + currentMinY] )
+		while ( !isPlaced && ( optimalX + shift + item.matrix()[0].size() <= discreteWidth_ ) )//Not sure
 		{
-			if ( currentMinX <= x )
-			{
-				if ( rowItemWidth < -shift )
-				{
-					currentMinX = x;
-					return true;
-				}
-			}
-			x += abs( shift );
+			optimalX += shift;
+			isPlaced = isItemCanPlace( item, optimalX, optimalY, badLine, shift );
 		}
-		currentMinY++;
-		if ( currentMinY > discreteHeigth - 1 ) return false;
+		if ( !isPlaced )
+		{
+			optimalY++;
+			optimalX= 0;
+			shift = 0;
+		}
+	}
+	return isPlaced;
+}
+
+bool Pallet::isItemCanPlace( Item& item, int x, int y , int& badLine, int& shift){
+	bool isPlaced = true;
+	int j = 0;
+
+	if ( y < badLine && item.shifts().size() > 25 )// О БОЖЕ ....
+	{
+		isPlaced = isRowCanPlace( item.shifts() [badLine - y], item.matrix() [0].size(), shifts_ [badLine], x , shift);
+		if ( !isPlaced ) return isPlaced;
+	}
+	while ( j < item.shifts().size() && isPlaced )
+	{
+		isPlaced = isRowCanPlace( item.shifts() [item.orderedIndexes() [j]], item.matrix() [0].size(), shifts_ [item.orderedIndexes() [j] + y], x, shift );
+		j += 1;
+	}
+	badLine = item.orderedIndexes() [j - 1] + y;
+	return isPlaced;
+}
+
+bool Pallet::isRowCanPlace( const std::vector<int>& itemRow,int rowLength, const std::vector<int>& palletRow, int x, int& shift ){
+	bool isPlaced = true;
+	shift = 0;
+	int writeReadHead = 0;
+	while ( isPlaced && writeReadHead < rowLength )
+	{
+		Point<int> pal = getPixel( palletRow, x + writeReadHead );
+		Point<int> it = getPixel( itemRow, writeReadHead );
+		isPlaced = isPixelCanPlace( pal.x, it.x, itemRow [it.y], shift );
+		writeReadHead += shift;
+	}
+	return isPlaced;
+}
+
+Point<int> Pallet::getPixel( const std::vector<int>& paleteRow, int iter ){
+	int r = 0;
+	int i = -1;
+	int sign = 1;
+
+	while ( r < iter + 1 )
+	{
+		i += 1;
+		r += abs( paleteRow [i] );
+	}
+	if ( paleteRow [i] < 0 ) sign = -1;
+	return Point<int> (sign * ( r - iter ), i);
+}
+
+bool Pallet::isPixelCanPlace( int palletPixel, int itemPixel, int itemUnit, int& shift ){
+	bool isPlaced = false;
+	shift = 0;
+	if ( itemPixel < 0 || palletPixel < 0 )
+	{
+		isPlaced = true;
+		shift = -std::min( itemPixel, palletPixel );
+	}
+	else
+	{
+		isPlaced = false;
+		shift = palletPixel + itemUnit - itemPixel;
+	}
+	return isPlaced;
+}
+
+void Pallet::placeItem(  Item& item, int x, int y ){
+	for ( int i = 0; i < item.shifts().size(); i++){
+		placeRow( item.shifts() [i], shifts_ [y + i], x );
 	}
 }
 
+void Pallet::placeRow(  std::vector<int>& itemRow,  std::vector<int>& palletRow, int x ){
+	int numberFirstPositiveUnit = 0;
+	if ( itemRow [numberFirstPositiveUnit] < 0 )
+	{
+		x -= itemRow [numberFirstPositiveUnit];
+		numberFirstPositiveUnit = 1;
+	}
+	for ( int numberPositiveUnit=numberFirstPositiveUnit; numberFirstPositiveUnit < itemRow.size(); numberFirstPositiveUnit += 2 )
+	{
+		placeUnit( itemRow, palletRow, x, numberPositiveUnit );
+		if ( numberPositiveUnit + 2 < itemRow.size() )
+		{
+			x += itemRow [numberPositiveUnit] + abs( itemRow [numberPositiveUnit + 1] );
+		}
+	}
+}
 
+void Pallet::placeUnit(  std::vector<int>& item_line,  std::vector<int>& pallet_line, int x, int number_item_unit ){
+	Point<int> pal = getPixel( pallet_line, x );
+	int pallet_pixel = pal.x;
+	int number_pallet_unit = pal.y;
+	int number_pixels_left = pallet_line [number_pallet_unit] - pallet_pixel;
+	int number_pixels_right = pallet_pixel + item_line [number_item_unit];
 
+	if ( 0 < number_pallet_unit && number_pallet_unit + 1 < pallet_line.size() )
+	{
+		std::cout << 1;
+		if ( number_pixels_left == 0 and number_pixels_right == 0 )
+		{
+			pallet_line [number_pallet_unit - 1] += -pallet_line [number_pallet_unit];
+			pallet_line.erase( pallet_line.begin() + number_pallet_unit );
+			pallet_line [number_pallet_unit - 1] += pallet_line [number_pallet_unit];
+			pallet_line.erase( pallet_line.begin() + number_pallet_unit );
+		}
+		else if ( number_pixels_left != 0 and number_pixels_right != 0 )
+		{
+			pallet_line.insert( pallet_line.begin() + number_pallet_unit + 1, number_pixels_right );
+			pallet_line [number_pallet_unit] = item_line [number_item_unit];
+			pallet_line.insert( pallet_line.begin() + number_pallet_unit, number_pixels_left );
+		}
+		else if ( number_pixels_left == 0 and number_pixels_right != 0 )
+		{
+			pallet_line [number_pallet_unit] = number_pixels_right;
+			pallet_line [number_pallet_unit - 1] += item_line [number_item_unit];
+		}
+		else
+		{
+			pallet_line [number_pallet_unit] = number_pixels_left;
+			pallet_line [number_pallet_unit + 1] += item_line [number_item_unit];
+		}
+	}
+	else if ( number_pallet_unit == 0 and pallet_line.size() != 1 )
+	{
+		std::cout << 2;
+		if ( number_pixels_left == 0 and number_pixels_right == 0 )
+		{
+			pallet_line.erase( pallet_line.begin()+ number_pallet_unit );
+			pallet_line [number_pallet_unit] += item_line [number_item_unit];
+		}
+		else if ( number_pixels_left != 0 and number_pixels_right != 0 )
+		{
+			pallet_line.insert( pallet_line.begin()+number_pallet_unit + 1, number_pixels_right );
+			pallet_line [number_pallet_unit] = item_line [number_item_unit];
+			pallet_line.insert( pallet_line.begin()+ number_pallet_unit, number_pixels_left );
+		}
+		else if ( number_pixels_left == 0 and number_pixels_right != 0 )
+		{
+			pallet_line [number_pallet_unit] = number_pixels_right;
+			pallet_line.insert( pallet_line.begin(), number_pallet_unit, item_line [number_item_unit] );
+		}
+		else
+		{
+			pallet_line [number_pallet_unit] = number_pixels_left;
+			pallet_line [number_pallet_unit + 1] += item_line [number_item_unit];
+		}
+	}
+	else if ( number_pallet_unit == pallet_line.size() - 1 and pallet_line.size() != 1 )
+	{
+		std::cout << 3;
+		if ( number_pixels_left == 0 and number_pixels_right == 0 )
+		{
+			pallet_line.pop_back(); //Change
+			pallet_line [number_pallet_unit - 1] += item_line [number_item_unit];
+		}
+		else if ( number_pixels_left != 0 and number_pixels_right != 0 )
+		{
+			pallet_line.insert(pallet_line.begin()+ number_pallet_unit + 1, number_pixels_right );
+			pallet_line [number_pallet_unit] = item_line [number_item_unit];
+			pallet_line.insert( pallet_line.begin()+number_pallet_unit, number_pixels_left );
+		}
+		else if ( number_pixels_left == 0 and number_pixels_right != 0 )
+		{
+			pallet_line [number_pallet_unit] = number_pixels_right;
+			pallet_line [number_pallet_unit - 1] += item_line [number_item_unit];
+		}
+		else
+		{
+			pallet_line [number_pallet_unit] = number_pixels_left;
+			pallet_line.insert( pallet_line.begin() + number_pallet_unit + 1, item_line [number_item_unit] );
+		}
+	}
+	else if ( pallet_line.size() == 1 )
+	{
+		std::cout << 4;
+		if ( number_pixels_left == 0 and number_pixels_right == 0 )
+		{
+			pallet_line [number_pallet_unit] *= -1;
+		}
+		else if ( number_pixels_left != 0 and number_pixels_right != 0 )
+		{
+			pallet_line.insert(pallet_line.begin()+ number_pallet_unit + 1, number_pixels_right );
+			pallet_line [number_pallet_unit] = item_line [number_item_unit];
+			pallet_line.insert( pallet_line.begin()+number_pallet_unit, number_pixels_left );
+		}
+		else if ( number_pixels_left == 0 and number_pixels_right != 0 )
+		{
+			pallet_line [number_pallet_unit] = number_pixels_right;
+			pallet_line.insert(pallet_line.begin()+ number_pallet_unit, item_line [number_item_unit] );
+		}
+		else
+		{
+			pallet_line [number_pallet_unit] = number_pixels_left;
+			pallet_line.insert( pallet_line.begin() + number_pallet_unit + 1, item_line [number_item_unit] );
+		}
+	}
+	else
+	{
+		std::cout << "ERROR";
+	}
 
+}

@@ -4,9 +4,9 @@
 
 Packer::Packer( float w, float h, float pixelSize, const std::vector<Item>& items ): width( w ), height( h ), items( items ), pixelSize( pixelSize ){
 	pallets.push_back( Pallet( width, height, pixelSize ) );
-	sort( this->items.begin(), this->items.end(), []( Item const &a, Item const &b ) -> bool {
+	/*sort( this->items.begin(), this->items.end(), []( Item  const &a, Item  const &b ) -> bool {
 		return ( a > b );
-		} );
+		} );*/
 }
 
 void Packer::pack(){
@@ -14,16 +14,17 @@ void Packer::pack(){
 	bool isPacked = false;
 	for ( auto& item : items )
 	{
+		isPacked = false;
 		while ( !isPacked )
 		{
 			isPacked = false;
-			if ( !pallets [i].placeItem( item ) )
+			if ( !pallets [i].packItem( item ) )
 			{
 				i++;
 				if ( i > pallets.size() - 1 )
 				{
 					pallets.push_back( Pallet( width, height, pixelSize ) );
-					if ( !pallets [i].placeItem( item ) )
+					if ( !pallets [i].packItem( item ) )
 					{
 						std::cout << "The item is too big";
 						return;

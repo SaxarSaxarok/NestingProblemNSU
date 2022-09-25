@@ -4,13 +4,13 @@
 
 class Polygon{
 protected:
-	std::vector<Point<float>> points;
-	mutable Point<float>* barycenterValue;
-	mutable float* areaValue;
+	std::vector<Point<float>> points_;
+	mutable Point<float>* barycenterValue_;
+	mutable float* areaValue_;
 
 public:
 
-
+	void moveTo(Point<float> vector);
 	Polygon();
 	Polygon( const std::vector<Point<float>>& points_ );
 	Polygon( const Polygon& polygon_ );

@@ -3,6 +3,7 @@
 #include "Polygon.h"
 #include "Item.h"
 #include <iostream>
+#include "Packer.h"
 
 int main(){
 	Point<float> P1( 1.0f, 0.0f );
@@ -11,9 +12,9 @@ int main(){
 	Point<float> P4( 2.1f, 0.0f );
 	std::vector<Point<float>> vec {P1,P2,P3,P4};
 	Polygon polygon( vec );
-	Item item1( 1, vec, 0.5 );
-	Item item2( 2, polygon, 0.5 );
-
-	float area = item1.area();
-	auto point = item2.barycenter();
+	Item item1( 1, vec, 2.6 );
+	Item item2( 2, vec, 2.6 );
+	Item item3( 3, vec, 2.6 );
+	Packer packer( 10,10,2.6,std::vector<Item>{item1,item2,item3} );
+	packer.pack();
 }
