@@ -2,12 +2,12 @@
 #include <algorithm>
 #include <iostream>
 
-Item::Item( int id, std::vector<Point<float>> points, float h ): id_( id ),currentRotation_(0), Polygon( points ){
+Item::Item( int id, std::vector<Point<float>>& points, float h ): id_( id ),currentRotation_(0), Polygon( points ){
 	matrix_ = this->getMatrixRepresentation( h );
 	calculateAllRotations();
 	calculateAllOrderedIndexes();
 }
-Item::Item( int id, Polygon polygon, float h ) : id_( id ),currentRotation_(0) ,Polygon( polygon ){
+Item::Item( int id, Polygon& polygon, float h ) : id_( id ),currentRotation_(0) ,Polygon( polygon ){
 	matrix_ = this->getMatrixRepresentation( h );
 	calculateAllRotations();
 	calculateAllOrderedIndexes();
@@ -41,23 +41,23 @@ const std::vector<std::vector<int>>& Item::matrix() const{
 }
 
 const std::vector<std::vector<int>>& Item::shifts() const{
-	return rotationsOfShifts_ [this->currentRotation_];
+	return rotationsOfShifts_ [currentRotation_];
 }
 
 const std::vector<int>& Item::orderedIndexes() const{
-	return orderedIndexes_ [this->currentRotation_];
+	return orderedIndexes_ [currentRotation_];
 }
 
 std::vector<std::vector<int>>& Item::matrix(){
-	return rotationsOfMatrix_ [this->currentRotation_];
+	return rotationsOfMatrix_ [currentRotation_];
 }
 
 std::vector<std::vector<int>>& Item::shifts(){
-	return rotationsOfShifts_ [this->currentRotation_];
+	return rotationsOfShifts_ [currentRotation_];
 }
 
 std::vector<int>& Item::orderedIndexes(){
-	return orderedIndexes_ [this->currentRotation_];
+	return orderedIndexes_ [currentRotation_];
 }
 
 int Item::currentRotation() const{
@@ -84,7 +84,7 @@ bool Item::operator>=( Item const& item ) const{
 	return !( ( *this ) <= item ) || this->matrix_ [0].size() == item.matrix_.size() * item.matrix_ [0].size();
 }
 
-std::vector<std::vector<int>> Item::calculateShifts( std::vector<std::vector<int>> matrix ){
+std::vector<std::vector<int>> Item::calculateShifts( const std::vector<std::vector<int>>& matrix ){
 	std::vector<std::vector<int>> shifts;
 	for ( auto j = 0; j < matrix.size(); j++ )
 	{
@@ -115,7 +115,7 @@ std::vector<std::vector<int>> Item::calculateShifts( std::vector<std::vector<int
 
 
 
-std::vector<std::vector<int>> Item::rotateMatrixBy90( std::vector<std::vector<int>> matrix ){
+std::vector<std::vector<int>> Item::rotateMatrixBy90(const std::vector<std::vector<int>>& matrix ){
 	std::vector<std::vector<int>> rotMatrix( matrix [0].size(), std::vector<int>( matrix.size(), 0 ) );
 
 	for ( int i = 0; i < rotMatrix.size(); i++ )

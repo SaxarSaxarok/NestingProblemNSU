@@ -4,6 +4,7 @@
 #include "Item.h"
 #include <iostream>
 #include "Packer.h"
+#include <ctime>
 
 int main(){
 	Point<float> P1( 1.0f, 0.0f );
@@ -11,10 +12,16 @@ int main(){
 	Point<float> P3( 3.0f, 3.7f );
 	Point<float> P4( 2.1f, 0.0f );
 	std::vector<Point<float>> vec {P1,P2,P3,P4};
-	Polygon polygon( vec );
-	Item item1( 1, vec, 2.6 );
-	Item item2( 2, vec, 2.6 );
-	Item item3( 3, vec, 2.6 );
-	Packer packer( 10,10,2.6,std::vector<Item>{item1,item2,item3} );
+	std::vector<Item> items;
+	for ( int i = 0; i < 400; i++ )
+	{
+		items.push_back( Item( i, vec, 1 ) );
+	}
+	Packer packer( 1000,1000, 1, items);
+	unsigned int start_time = clock();
 	packer.pack();
+	unsigned int end_time = clock();
+	std::cout << end_time-start_time;
+	int a;
+	std::cin >> a;
 }

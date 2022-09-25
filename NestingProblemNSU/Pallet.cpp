@@ -3,15 +3,19 @@
 
 
 Pallet::Pallet( float w, float h, float pixelSize ): width_( w ), heigth_( h ), pixelSize_( pixelSize ){
-	discreteWidth_ = ceil( width_ / pixelSize );
-	discreteHeigth_ = ceil( heigth_ / pixelSize );
+	discreteWidth_ = floor( width_ / pixelSize ); //?
+	discreteHeigth_ = floor( heigth_ / pixelSize ); //?
 	shifts_ = std::vector<std::vector<int>>( discreteHeigth_, std::vector<int>( 1, -discreteWidth_ ) );//Верно ?
+}
+
+std::vector<Item>& Pallet::items(){
+	return items_;
 }
 
 bool Pallet::packItem( Item& item ){
 
-	int optimalX = INT_MAX;
-	int optimalY = INT_MAX;
+	int optimalX = discreteWidth_+1;
+	int optimalY = discreteHeigth_+1;
 	int optimalRotation = 0;
 	bool isPlaced = false;
 	for ( int i = 0; i < 4; i++ )
@@ -20,43 +24,37 @@ bool Pallet::packItem( Item& item ){
 		item.currentRotation( i );
 		isPlaced = findPlacePosition( item, x, y );
 
-		if ( optimalY > y || ( optimalY == y && optimalX > x ) )
+		if ( optimalY > y+item.matrix().size() || ( optimalY == y + item.matrix().size() && optimalX > x ) )
 		{
-			optimalY = y;
+			optimalY = y + item.matrix().size();
 			optimalX = x;
 			optimalRotation = i;
 		}
 	}
-	item.currentRotation( optimalRotation );
-	item.rotate();
-
-	item.moveTo( Point<float>( optimalX * pixelSize_, optimalY * pixelSize_ ) );
-	placeItem(item,optimalX,optimalY);
-	std::cout << '\n';
-	std::cout << '\n';
-	for ( int i = 0; i < shifts_.size(); i++ )
+	if ( isPlaced )
 	{
-		for ( int j = 0; j < shifts_ [i].size(); j++ )
-		{
-			std::cout << shifts_ [i][j] << ' ';
-		}
-		std::cout << '\n';
-		std::cout << '\n';
+		item.currentRotation( optimalRotation );
+		item.rotate();
+
+		item.moveTo( Point<float>( optimalX * pixelSize_, optimalY * pixelSize_ ) );
+		/*std::cout << item.currentRotation() << std::endl;*/
+		placeItem( item, optimalX, optimalY );
+		items_.push_back( item );
+		std::cout << item.id_ <<' ' << optimalY<<std::endl;
 	}
-	items_.push_back( item );
-	return true;
+	return isPlaced;
 }
 
-bool Pallet::findPlacePosition( Item& item, int& optimalX, int& optimalY ){
+bool Pallet::findPlacePosition( Item& item, int& optimalX, int& optimalY ) const{
 	optimalX = 0;
 	optimalY = 0;
 	int shift = 0;
 	int badLine = 0;
 	bool isPlaced = false;
 
-	while ( !isPlaced && ( optimalY + item.shifts().size() <= shifts_.size() ) )
+	while ( !isPlaced && ( (optimalY + item.shifts().size()) <= shifts_.size() ) )
 	{
-		while ( !isPlaced && ( optimalX + shift + item.matrix()[0].size() <= discreteWidth_ ) )//Not sure
+		while ( !isPlaced && ( (optimalX + shift + item.matrix()[0].size()) <= discreteWidth_ ) )//Not sure
 		{
 			optimalX += shift;
 			isPlaced = isItemCanPlace( item, optimalX, optimalY, badLine, shift );
@@ -71,7 +69,7 @@ bool Pallet::findPlacePosition( Item& item, int& optimalX, int& optimalY ){
 	return isPlaced;
 }
 
-bool Pallet::isItemCanPlace( Item& item, int x, int y , int& badLine, int& shift){
+bool Pallet::isItemCanPlace( Item& item, int x, int y , int& badLine, int& shift) const{
 	bool isPlaced = true;
 	int j = 0;
 
@@ -89,7 +87,7 @@ bool Pallet::isItemCanPlace( Item& item, int x, int y , int& badLine, int& shift
 	return isPlaced;
 }
 
-bool Pallet::isRowCanPlace( const std::vector<int>& itemRow,int rowLength, const std::vector<int>& palletRow, int x, int& shift ){
+bool Pallet::isRowCanPlace( const std::vector<int>& itemRow,int rowLength, const std::vector<int>& palletRow, int x, int& shift ) const{
 	bool isPlaced = true;
 	shift = 0;
 	int writeReadHead = 0;
@@ -103,7 +101,7 @@ bool Pallet::isRowCanPlace( const std::vector<int>& itemRow,int rowLength, const
 	return isPlaced;
 }
 
-Point<int> Pallet::getPixel( const std::vector<int>& paleteRow, int iter ){
+Point<int> Pallet::getPixel( const std::vector<int>& row, int iter ) const{
 	int r = 0;
 	int i = -1;
 	int sign = 1;
@@ -111,13 +109,13 @@ Point<int> Pallet::getPixel( const std::vector<int>& paleteRow, int iter ){
 	while ( r < iter + 1 )
 	{
 		i += 1;
-		r += abs( paleteRow [i] );
+		r += abs( row [i] );
 	}
-	if ( paleteRow [i] < 0 ) sign = -1;
+	if ( row [i] < 0 ) sign = -1;
 	return Point<int> (sign * ( r - iter ), i);
 }
 
-bool Pallet::isPixelCanPlace( int palletPixel, int itemPixel, int itemUnit, int& shift ){
+bool Pallet::isPixelCanPlace( int palletPixel, int itemPixel, int itemUnit, int& shift ) const{
 	bool isPlaced = false;
 	shift = 0;
 	if ( itemPixel < 0 || palletPixel < 0 )
@@ -165,7 +163,6 @@ void Pallet::placeUnit(  std::vector<int>& item_line,  std::vector<int>& pallet_
 
 	if ( 0 < number_pallet_unit && number_pallet_unit + 1 < pallet_line.size() )
 	{
-		std::cout << 1;
 		if ( number_pixels_left == 0 and number_pixels_right == 0 )
 		{
 			pallet_line [number_pallet_unit - 1] += -pallet_line [number_pallet_unit];
@@ -192,7 +189,6 @@ void Pallet::placeUnit(  std::vector<int>& item_line,  std::vector<int>& pallet_
 	}
 	else if ( number_pallet_unit == 0 and pallet_line.size() != 1 )
 	{
-		std::cout << 2;
 		if ( number_pixels_left == 0 and number_pixels_right == 0 )
 		{
 			pallet_line.erase( pallet_line.begin()+ number_pallet_unit );
@@ -217,7 +213,6 @@ void Pallet::placeUnit(  std::vector<int>& item_line,  std::vector<int>& pallet_
 	}
 	else if ( number_pallet_unit == pallet_line.size() - 1 and pallet_line.size() != 1 )
 	{
-		std::cout << 3;
 		if ( number_pixels_left == 0 and number_pixels_right == 0 )
 		{
 			pallet_line.pop_back(); //Change
@@ -242,7 +237,6 @@ void Pallet::placeUnit(  std::vector<int>& item_line,  std::vector<int>& pallet_
 	}
 	else if ( pallet_line.size() == 1 )
 	{
-		std::cout << 4;
 		if ( number_pixels_left == 0 and number_pixels_right == 0 )
 		{
 			pallet_line [number_pallet_unit] *= -1;
@@ -266,7 +260,7 @@ void Pallet::placeUnit(  std::vector<int>& item_line,  std::vector<int>& pallet_
 	}
 	else
 	{
-		std::cout << "ERROR";
+		return;
 	}
 
 }

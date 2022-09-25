@@ -1,6 +1,7 @@
 #pragma once
 #include "Point.h"
 #include<vector>
+#include <ostream>
 
 class Polygon{
 protected:
@@ -30,5 +31,8 @@ public:
 	std::vector<std::vector<int>> getMatrixRepresentation( float h );
 
 	Polygon* shiftToOrigin();
+
+	std::ostream& print( std::ostream& out );
+	friend std::ostream& operator << ( std::ostream& out, Polygon& object );
 };
 

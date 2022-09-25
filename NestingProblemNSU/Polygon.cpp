@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <iostream>
+#include <iomanip>
 
 Polygon::Polygon(): barycenterValue_( nullptr ), areaValue_( nullptr ){}
 
@@ -274,4 +275,23 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( float h ){
 	matrix.pop_back();
 	for ( auto i = 0; i < matrix.size(); i++ ) matrix [i].pop_back();
 	return matrix;
+}
+
+std::ostream& Polygon::print( std::ostream& out ){
+	if ( this->points_.empty() )
+		out << "There is no polygon" << std::endl;
+	else
+		for ( int l = 0; l < this->points_.size(); l++ )
+		{
+			out << '(' << l + 1 << ')'
+				<< std::setw( 10 ) << this->points_ [l].x
+				<< std::setw( 10 ) << this->points_ [l].y
+				<< std::endl;
+		}
+	return out;
+}
+
+std::ostream& operator<<( std::ostream& out, Polygon& object ){
+	object.print( out );
+	return out;
 }
