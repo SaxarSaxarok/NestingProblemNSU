@@ -5,23 +5,62 @@
 #include <iostream>
 #include "Packer.h"
 #include <ctime>
+#include <fstream>
+#include <string>
+#include <sstream>
+
+std::istream& operator>>( std::istream& is, Point<double>& p ){
+	is >> p.x;
+	is >> p.y;
+	return is;
+}
 
 int main(){
-	Point<float> P1( 1.0f, 0.0f );
-	Point<float> P2( 0.3f, 3.0f );
-	Point<float> P3( 3.0f, 3.7f );
-	Point<float> P4( 2.1f, 0.0f );
-	std::vector<Point<float>> vec {P1,P2,P3,P4};
+
+	std::ifstream file( "polygons400.txt", std::ios::in ); // открыли файл для чтения
+
+	std::vector<Point<double>> vec;
 	std::vector<Item> items;
-	for ( int i = 0; i < 400; i++ )
+	int i = 0;
+	double h = 7.07;
+	int n;
+	std::string str;
+	std::getline( file, str );
+	std::istringstream ss( str );
+	ss >> n;
+	for ( int i = 0; i < n; i++ )
 	{
-		items.push_back( Item( i, vec, 1 ) );
+		std::getline( file, str );
+		std::istringstream ss( str );
+		Point<double> p;
+		while ( ss >> p )
+		{
+			vec.push_back( p );
+		}
+		vec.pop_back();
+		items.push_back( Item( i, vec, h ) );
+		vec.clear();
 	}
-	Packer packer( 1000,1000, 1, items);
+	Packer packer( 2000, 2000, h, items );
 	unsigned int start_time = clock();
 	packer.pack();
 	unsigned int end_time = clock();
-	std::cout << end_time-start_time;
-	int a;
-	std::cin >> a;
+	std::cout << end_time - start_time;
+
+	i = 0;
+	for (auto& pallet : packer.pallets )
+	{
+		std::ofstream outfile ("test"+std::to_string(i) +".txt");
+		i++;
+		outfile << pallet.items().size() << std::endl;
+		for ( int j = 0; j < pallet.items().size(); j++ )
+		{
+			for ( int k = 0; k < pallet.items() [j].points_.size(); k++ )
+			{
+				outfile << pallet.items() [j].points_ [k].x << ' ' << pallet.items() [j].points_ [k].y << ' ';
+			}
+			outfile << std::endl;
+		}
+		outfile.close();
+	}
 }

@@ -5,16 +5,16 @@
 class Pallet{
 private:
 
-	float width_;
-	float heigth_;
+	double width_;
+	double heigth_;
 	int discreteWidth_;
 	int discreteHeigth_;
-	float pixelSize_;
+	double pixelSize_;
 	std::vector<Item> items_;
 	std::vector<std::vector<int>> shifts_;
 public:
 
-	Pallet( float w, float h, float pixelSize );
+	Pallet( double w, double h, double pixelSize );
 	std::vector<Item>& items();
 	bool packItem( Item& item );
 

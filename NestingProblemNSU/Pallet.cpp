@@ -2,7 +2,7 @@
 #include <iostream>
 
 
-Pallet::Pallet( float w, float h, float pixelSize ): width_( w ), heigth_( h ), pixelSize_( pixelSize ){
+Pallet::Pallet( double w, double h, double pixelSize ): width_( w ), heigth_( h ), pixelSize_( pixelSize ){
 	discreteWidth_ = floor( width_ / pixelSize ); //?
 	discreteHeigth_ = floor( heigth_ / pixelSize ); //?
 	shifts_ = std::vector<std::vector<int>>( discreteHeigth_, std::vector<int>( 1, -discreteWidth_ ) );//Верно ?
@@ -26,7 +26,7 @@ bool Pallet::packItem( Item& item ){
 
 		if ( optimalY > y+item.matrix().size() || ( optimalY == y + item.matrix().size() && optimalX > x ) )
 		{
-			optimalY = y + item.matrix().size();
+			optimalY = y+item.matrix().size();
 			optimalX = x;
 			optimalRotation = i;
 		}
@@ -36,11 +36,11 @@ bool Pallet::packItem( Item& item ){
 		item.currentRotation( optimalRotation );
 		item.rotate();
 
-		item.moveTo( Point<float>( optimalX * pixelSize_, optimalY * pixelSize_ ) );
+		item.moveTo( Point<double>( optimalX * pixelSize_, (optimalY-item.matrix().size()) * pixelSize_ ) );
 		/*std::cout << item.currentRotation() << std::endl;*/
-		placeItem( item, optimalX, optimalY );
+		placeItem( item, optimalX, optimalY - item.matrix().size() );
 		items_.push_back( item );
-		std::cout << item.id_ <<' ' << optimalY<<std::endl;
+		std::cout << item.id_<<std::endl;
 	}
 	return isPlaced;
 }
@@ -144,7 +144,7 @@ void Pallet::placeRow(  std::vector<int>& itemRow,  std::vector<int>& palletRow,
 		x -= itemRow [numberFirstPositiveUnit];
 		numberFirstPositiveUnit = 1;
 	}
-	for ( int numberPositiveUnit=numberFirstPositiveUnit; numberFirstPositiveUnit < itemRow.size(); numberFirstPositiveUnit += 2 )
+	for ( int numberPositiveUnit=numberFirstPositiveUnit; numberPositiveUnit < itemRow.size(); numberPositiveUnit += 2 )
 	{
 		placeUnit( itemRow, palletRow, x, numberPositiveUnit );
 		if ( numberPositiveUnit + 2 < itemRow.size() )
@@ -163,20 +163,20 @@ void Pallet::placeUnit(  std::vector<int>& item_line,  std::vector<int>& pallet_
 
 	if ( 0 < number_pallet_unit && number_pallet_unit + 1 < pallet_line.size() )
 	{
-		if ( number_pixels_left == 0 and number_pixels_right == 0 )
+		if ( number_pixels_left == 0 && number_pixels_right == 0 )
 		{
 			pallet_line [number_pallet_unit - 1] += -pallet_line [number_pallet_unit];
 			pallet_line.erase( pallet_line.begin() + number_pallet_unit );
 			pallet_line [number_pallet_unit - 1] += pallet_line [number_pallet_unit];
 			pallet_line.erase( pallet_line.begin() + number_pallet_unit );
 		}
-		else if ( number_pixels_left != 0 and number_pixels_right != 0 )
+		else if ( number_pixels_left != 0 && number_pixels_right != 0 )
 		{
 			pallet_line.insert( pallet_line.begin() + number_pallet_unit + 1, number_pixels_right );
 			pallet_line [number_pallet_unit] = item_line [number_item_unit];
 			pallet_line.insert( pallet_line.begin() + number_pallet_unit, number_pixels_left );
 		}
-		else if ( number_pixels_left == 0 and number_pixels_right != 0 )
+		else if ( number_pixels_left == 0 && number_pixels_right != 0 )
 		{
 			pallet_line [number_pallet_unit] = number_pixels_right;
 			pallet_line [number_pallet_unit - 1] += item_line [number_item_unit];
@@ -187,23 +187,23 @@ void Pallet::placeUnit(  std::vector<int>& item_line,  std::vector<int>& pallet_
 			pallet_line [number_pallet_unit + 1] += item_line [number_item_unit];
 		}
 	}
-	else if ( number_pallet_unit == 0 and pallet_line.size() != 1 )
+	else if ( number_pallet_unit == 0 && pallet_line.size() != 1 )
 	{
-		if ( number_pixels_left == 0 and number_pixels_right == 0 )
+		if ( number_pixels_left == 0 && number_pixels_right == 0 )
 		{
 			pallet_line.erase( pallet_line.begin()+ number_pallet_unit );
 			pallet_line [number_pallet_unit] += item_line [number_item_unit];
 		}
-		else if ( number_pixels_left != 0 and number_pixels_right != 0 )
+		else if ( number_pixels_left != 0 && number_pixels_right != 0 )
 		{
-			pallet_line.insert( pallet_line.begin()+number_pallet_unit + 1, number_pixels_right );
+			pallet_line.insert( pallet_line.begin() + number_pallet_unit + 1, number_pixels_right );
 			pallet_line [number_pallet_unit] = item_line [number_item_unit];
-			pallet_line.insert( pallet_line.begin()+ number_pallet_unit, number_pixels_left );
+			pallet_line.insert( pallet_line.begin() + number_pallet_unit, number_pixels_left );
 		}
-		else if ( number_pixels_left == 0 and number_pixels_right != 0 )
+		else if ( number_pixels_left == 0 && number_pixels_right != 0 )
 		{
 			pallet_line [number_pallet_unit] = number_pixels_right;
-			pallet_line.insert( pallet_line.begin(), number_pallet_unit, item_line [number_item_unit] );
+			pallet_line.insert( pallet_line.begin() + number_pallet_unit, item_line [number_item_unit] );
 		}
 		else
 		{
@@ -211,20 +211,20 @@ void Pallet::placeUnit(  std::vector<int>& item_line,  std::vector<int>& pallet_
 			pallet_line [number_pallet_unit + 1] += item_line [number_item_unit];
 		}
 	}
-	else if ( number_pallet_unit == pallet_line.size() - 1 and pallet_line.size() != 1 )
+	else if ( number_pallet_unit == pallet_line.size() - 1 && pallet_line.size() != 1 )
 	{
-		if ( number_pixels_left == 0 and number_pixels_right == 0 )
+		if ( number_pixels_left == 0 && number_pixels_right == 0 )
 		{
 			pallet_line.pop_back(); //Change
 			pallet_line [number_pallet_unit - 1] += item_line [number_item_unit];
 		}
-		else if ( number_pixels_left != 0 and number_pixels_right != 0 )
+		else if ( number_pixels_left != 0 && number_pixels_right != 0 )
 		{
 			pallet_line.insert(pallet_line.begin()+ number_pallet_unit + 1, number_pixels_right );
 			pallet_line [number_pallet_unit] = item_line [number_item_unit];
 			pallet_line.insert( pallet_line.begin()+number_pallet_unit, number_pixels_left );
 		}
-		else if ( number_pixels_left == 0 and number_pixels_right != 0 )
+		else if ( number_pixels_left == 0 && number_pixels_right != 0 )
 		{
 			pallet_line [number_pallet_unit] = number_pixels_right;
 			pallet_line [number_pallet_unit - 1] += item_line [number_item_unit];
@@ -237,17 +237,17 @@ void Pallet::placeUnit(  std::vector<int>& item_line,  std::vector<int>& pallet_
 	}
 	else if ( pallet_line.size() == 1 )
 	{
-		if ( number_pixels_left == 0 and number_pixels_right == 0 )
+		if ( number_pixels_left == 0 && number_pixels_right == 0 )
 		{
 			pallet_line [number_pallet_unit] *= -1;
 		}
-		else if ( number_pixels_left != 0 and number_pixels_right != 0 )
+		else if ( number_pixels_left != 0 && number_pixels_right != 0 )
 		{
 			pallet_line.insert(pallet_line.begin()+ number_pallet_unit + 1, number_pixels_right );
 			pallet_line [number_pallet_unit] = item_line [number_item_unit];
 			pallet_line.insert( pallet_line.begin()+number_pallet_unit, number_pixels_left );
 		}
-		else if ( number_pixels_left == 0 and number_pixels_right != 0 )
+		else if ( number_pixels_left == 0 && number_pixels_right != 0 )
 		{
 			pallet_line [number_pallet_unit] = number_pixels_right;
 			pallet_line.insert(pallet_line.begin()+ number_pallet_unit, item_line [number_item_unit] );

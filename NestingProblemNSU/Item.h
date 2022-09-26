@@ -9,8 +9,8 @@ private:
 	int currentRotation_;
 public:
 	int id_;
-	Item( int id, std::vector<Point<float>>& points, float h );
-	Item( int id, Polygon& polygon, float h );
+	Item( int id, std::vector<Point<double>>& points, double h );
+	Item( int id, Polygon& polygon, double h );
 
 	const std::vector<std::vector<int>>& matrix() const;
 	const std::vector<std::vector<int>>& shifts() const;

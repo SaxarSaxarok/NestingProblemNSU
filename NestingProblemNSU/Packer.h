@@ -5,15 +5,15 @@ class Packer{
 private:
 
 	std::vector<Item> items;
-	float width;
-	float height;
-	float pixelSize;
+	double width;
+	double height;
+	double pixelSize;
 
 public:
 	std::vector<Pallet> pallets;
 
 
-	Packer( float width, float heigth, float pixelSize, const std::vector<Item>& items );
+	Packer( double width, double heigth, double pixelSize, const std::vector<Item>& items );
 	void pack();
 };
 

@@ -2,12 +2,12 @@
 #include <algorithm>
 #include <iostream>
 
-Item::Item( int id, std::vector<Point<float>>& points, float h ): id_( id ),currentRotation_(0), Polygon( points ){
+Item::Item( int id, std::vector<Point<double>>& points, double h ): id_( id ),currentRotation_(0), Polygon( points ){
 	matrix_ = this->getMatrixRepresentation( h );
 	calculateAllRotations();
 	calculateAllOrderedIndexes();
 }
-Item::Item( int id, Polygon& polygon, float h ) : id_( id ),currentRotation_(0) ,Polygon( polygon ){
+Item::Item( int id, Polygon& polygon, double h ) : id_( id ),currentRotation_(0) ,Polygon( polygon ){
 	matrix_ = this->getMatrixRepresentation( h );
 	calculateAllRotations();
 	calculateAllOrderedIndexes();
@@ -20,20 +20,20 @@ void Item::rotate(){
 		if ( currentRotation_ == 1 )
 		{
 			std::swap( point.x, point.y );
-			point.x *= -1;
+			point.y *= -1;
 		}
 		else if ( currentRotation_ == 2 )
 		{
-			std::swap( point.x, point.y );
 			point.x *= -1;
 			point.y *= -1;
 		}
 		else if ( currentRotation_ == 3 )
 		{
 			std::swap( point.x, point.y );
-			point.y *= -1;
+			point.x *= -1;
 		}
 	}
+	this->shiftToOrigin();
 }
 
 const std::vector<std::vector<int>>& Item::matrix() const{

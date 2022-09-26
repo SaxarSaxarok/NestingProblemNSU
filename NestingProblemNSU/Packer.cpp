@@ -2,11 +2,10 @@
 #include<algorithm>
 #include<iostream>
 
-Packer::Packer( float w, float h, float pixelSize, const std::vector<Item>& items ): width( w ), height( h ), items( items ), pixelSize( pixelSize ){
+Packer::Packer( double w, double h, double pixelSize, const std::vector<Item>& items ): width( w ), items(items),  height( h ), pixelSize( pixelSize ){
 	pallets.push_back( Pallet( width, height, pixelSize ) );
-	/*sort( this->items.begin(), this->items.end(), []( Item  const &a, Item  const &b ) -> bool {
-		return ( a > b );
-		} );*/
+	sort( this->items.begin(), this->items.end(), []( Item const& a, Item const& b ) -> bool
+		  { return a.matrix().size() * a.matrix() [0].size() > b.matrix().size() * b.matrix() [0].size(); } );
 }
 
 void Packer::pack(){
@@ -17,7 +16,6 @@ void Packer::pack(){
 		isPacked = false;
 		while ( !isPacked )
 		{
-			isPacked = false;
 			if ( !pallets [i].packItem( item ) )
 			{
 				i++;
