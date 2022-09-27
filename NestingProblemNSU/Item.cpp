@@ -40,24 +40,32 @@ const std::vector<std::vector<int>>& Item::matrix() const{
 	return rotationsOfMatrix_ [this->currentRotation_];
 }
 
+const std::vector<int>& Item::matrix( int i ) const{
+	return rotationsOfMatrix_ [currentRotation_][i];
+}
+
+int Item::matrix( int i, int j ) const{
+	return rotationsOfMatrix_ [currentRotation_][i][j];
+}
+
 const std::vector<std::vector<int>>& Item::shifts() const{
 	return rotationsOfShifts_ [currentRotation_];
+}
+
+const std::vector<int>& Item::shifts( int i ) const{
+	return rotationsOfShifts_ [currentRotation_][i];
+}
+
+int Item::shifts( int i, int j ) const{
+	return rotationsOfShifts_ [currentRotation_][i][j];
 }
 
 const std::vector<int>& Item::orderedIndexes() const{
 	return orderedIndexes_ [currentRotation_];
 }
 
-std::vector<std::vector<int>>& Item::matrix(){
-	return rotationsOfMatrix_ [currentRotation_];
-}
-
-std::vector<std::vector<int>>& Item::shifts(){
-	return rotationsOfShifts_ [currentRotation_];
-}
-
-std::vector<int>& Item::orderedIndexes(){
-	return orderedIndexes_ [currentRotation_];
+int Item::orderedIndexes( int i ) const{
+	return orderedIndexes_ [currentRotation_][i];
 }
 
 int Item::currentRotation() const{

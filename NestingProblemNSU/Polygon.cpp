@@ -42,6 +42,14 @@ Polygon& Polygon::operator = ( Polygon&& polygon ) noexcept{
 	return *this;
 }
 
+const std::vector<Point<double>>& Polygon::points() const{
+	return points_;
+}
+
+Point<double> Polygon::points( int i ) const{
+	return points_[i];
+}
+
 Point<double> Polygon::operator[]( int i ) const{
 	if ( i > -1 && i < this->points_.size() )
 		return this->points_ [i];
@@ -160,14 +168,14 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( double h ){
 			int i1 = ( i0 + 1 ) % size;
 			if ( ( std::min( points_ [i0].y, points_ [i1].y ) <= k * h ) &&
 				 k * h <= std::max( points_ [i0].y, points_ [i1].y ) &&
-				 abs( points_ [i1].y - points_ [i0].y ) > FLT_EPSILON )
+				 abs( points_ [i1].y - points_ [i0].y ) > DBL_EPSILON)
 			{
 				double a = -( points_ [i1].x - points_ [i0].x ) / ( points_ [i1].y - points_ [i0].y );
 				double b = -points_ [i0].x - points_ [i0].y * a;
 				double yP = k * h;
 				double xP = round(( -b - a * k * h )*100000000)/100000000;
 
-				if ( abs( xP - points_ [i0].x ) < FLT_EPSILON )
+				if ( abs( xP - points_ [i0].x ) < DBL_EPSILON )
 				{
 					if ( ( points_ [i1].y - yP ) * ( points_ [( ( ( i0 - 1 ) % size ) + size ) % size].y - yP ) < 0 )
 					{
@@ -178,7 +186,7 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( double h ){
 						edges [k][floor( xP / h + accuracy )] += 2;
 					}
 				}
-				else if ( abs( xP - points_ [i1].x ) > FLT_EPSILON )
+				else if ( abs( xP - points_ [i1].x ) > DBL_EPSILON )
 				{
 					edges [k][floor( xP / h + accuracy )] += 1;
 				}

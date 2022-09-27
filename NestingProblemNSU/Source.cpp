@@ -55,9 +55,9 @@ int main(){
 		outfile << pallet.items().size() << std::endl;
 		for ( int j = 0; j < pallet.items().size(); j++ )
 		{
-			for ( int k = 0; k < pallet.items() [j].points_.size(); k++ )
+			for ( int k = 0; k < pallet.items() [j].points().size(); k++ )
 			{
-				outfile << pallet.items() [j].points_ [k].x << ' ' << pallet.items() [j].points_ [k].y << ' ';
+				outfile << pallet.items() [j].points(k).x << ' ' << pallet.items() [j].points(k).y << ' ';
 			}
 			outfile << std::endl;
 		}

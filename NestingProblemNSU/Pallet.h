@@ -25,8 +25,8 @@ private:
 	Point<int> getPixel( const std::vector<int>& paleteRow, int iter ) const;
 	bool isPixelCanPlace( int palletPixel, int itemPixel, int itemUnit, int& shift ) const;
 
-	void placeItem( Item& item, int x, int y );
-	void placeRow( std::vector<int>& itemRow, std::vector<int>& palletRow, int x );
-	void placeUnit( std::vector<int>& itemRow, std::vector<int>& palletRow, int x, int numberUnit );
+	void placeItem( const Item& item, int x, int y );
+	void placeRow( const std::vector<int>& itemRow, std::vector<int>& palletRow, int x );
+	void placeUnit( const std::vector<int>& itemRow, std::vector<int>& palletRow, int x, int numberUnit );
 };
 

@@ -13,12 +13,16 @@ public:
 	Item( int id, Polygon& polygon, double h );
 
 	const std::vector<std::vector<int>>& matrix() const;
-	const std::vector<std::vector<int>>& shifts() const;
-	const std::vector<int>& orderedIndexes() const;
+	const std::vector<int>& matrix( int i ) const;
+	int matrix( int i, int j ) const;
 
-	std::vector<std::vector<int>>& matrix();
-	std::vector<std::vector<int>>& shifts();
-	std::vector<int>& orderedIndexes();
+	const std::vector<std::vector<int>>& shifts() const;
+	const std::vector<int>& shifts( int i ) const;
+	int  shifts( int i, int j ) const;
+
+	const std::vector<int>& orderedIndexes() const;
+	int orderedIndexes(int i) const;
+
 
 	int currentRotation() const;
 	void currentRotation( int rotation );

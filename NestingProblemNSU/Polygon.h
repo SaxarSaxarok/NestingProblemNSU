@@ -7,9 +7,9 @@ class Polygon{
 protected:
 	mutable Point<double>* barycenterValue_;
 	mutable double* areaValue_;
+	std::vector<Point<double>> points_;
 
 public:
-	std::vector<Point<double>> points_;
 	void moveTo(Point<double> vector);
 	Polygon();
 	Polygon( const std::vector<Point<double>>& points_ );
@@ -17,6 +17,9 @@ public:
 	Polygon( Polygon&& points ) noexcept;
 	Polygon& operator = ( const Polygon& );
 	Polygon& operator = ( Polygon&& ) noexcept;
+
+	const std::vector<Point<double>>& points() const;
+	Point<double> points(int i) const;
 
 	Point<double> barycenter() const;
 	double area() const;
