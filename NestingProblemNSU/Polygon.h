@@ -10,7 +10,7 @@ protected:
 	std::vector<Point<double>> points_;
 
 public:
-	void moveTo(Point<double> vector);
+	Polygon& moveTo(Point<double> vector);
 	Polygon();
 	Polygon( const std::vector<Point<double>>& points_ );
 	Polygon( const Polygon& polygon_ );

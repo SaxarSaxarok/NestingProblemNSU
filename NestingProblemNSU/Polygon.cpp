@@ -61,7 +61,7 @@ int Polygon::size() const{
 	return points_.size();
 }
 
-void Polygon::moveTo( Point<double> vector ){
+Polygon& Polygon::moveTo( Point<double> vector ){
 	for ( auto& point : points_ )
 	{
 		point.x += vector.x;

@@ -13,7 +13,7 @@ Item::Item( int id, Polygon& polygon, double h ) : id_( id ),currentRotation_(0)
 	calculateAllOrderedIndexes();
 }
 
-void Item::rotate(){
+Item& Item::rotate(){
 	if ( currentRotation_ == 0 ) return;
 	for ( auto& point : points_ )
 	{

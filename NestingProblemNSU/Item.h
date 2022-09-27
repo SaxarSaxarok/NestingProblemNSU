@@ -26,7 +26,7 @@ public:
 
 	int currentRotation() const;
 	void currentRotation( int rotation );
-	void rotate();
+	Item& rotate();
 
 	bool operator< (Item const& item ) const;
 	bool operator<= ( Item const& item ) const;

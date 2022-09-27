@@ -34,8 +34,8 @@ bool Pallet::packItem( Item& item ){
 	if ( isPlaced )
 	{
 		item.currentRotation( optimalRotation );
-		item.rotate();
-		item.moveTo( Point<double>( optimalX * pixelSize_, ( optimalY - item.matrix().size() ) * pixelSize_ ) );
+		item.rotate()
+			.moveTo( Point<double>( optimalX * pixelSize_, ( optimalY - item.matrix().size() ) * pixelSize_ ) );
 		/*std::cout << item.currentRotation() << std::endl;*/
 		placeItem( item, optimalX, optimalY - item.matrix().size() );
 		items_.push_back( item );
@@ -72,7 +72,7 @@ bool Pallet::isItemCanPlace( Item& item, int x, int y, int& badLine, int& shift 
 	bool isPlaced = true;
 	int j = 0;
 
-	if ( y < badLine && item.shifts().size() > 25 )// н анфе ....
+	if ( y < badLine && item.shifts().size() > 25 )
 	{
 		isPlaced = isRowCanPlace( item.shifts( badLine - y ), item.matrix( 0 ).size(), shifts_ [badLine], x, shift );
 		if ( !isPlaced ) return isPlaced;
@@ -154,7 +154,7 @@ void Pallet::placeRow( const std::vector<int>& itemRow, std::vector<int>& pallet
 	}
 }
 
-void Pallet::placeUnit( const std::vector<int>& item_line, std::vector<int>& pallet_line, int x, int number_item_unit ){
+void Pallet::placeUnit( const std::vector<int>& item_line, std::vector<int>& pallet_line, int x, int number_item_unit ){ //Code from python
 	Point<int> pal = getPixel( pallet_line, x );
 	int pallet_pixel = pal.x;
 	int number_pallet_unit = pal.y;
