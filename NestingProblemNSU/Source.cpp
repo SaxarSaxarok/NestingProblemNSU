@@ -17,7 +17,7 @@ std::istream& operator>>( std::istream& is, Point<double>& p ){
 
 int main(){
 
-	std::ifstream file( "polygons400.txt", std::ios::in ); // открыли файл для чтения
+	std::ifstream file( "items400.txt", std::ios::in ); // открыли файл для чтения
 
 	std::vector<Point<double>> vec;
 	std::vector<Item> items;
@@ -41,7 +41,7 @@ int main(){
 		items.push_back( Item( i, vec, h ) );
 		vec.clear();
 	}
-	Packer packer( 2000, 2000, h, items );
+	Packer packer( 1000, 2000, h, items );
 	unsigned int start_time = clock();
 	packer.pack();
 	unsigned int end_time = clock();

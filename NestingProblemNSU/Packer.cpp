@@ -30,12 +30,14 @@ void Packer::pack(){
 					else
 					{
 						isPacked = true;
+						i = 0;
 					}
 				}
 			}
 			else
 			{
 				isPacked = true;
+				i = 0;
 			}
 		}
 	}

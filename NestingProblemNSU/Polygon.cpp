@@ -67,6 +67,7 @@ Polygon& Polygon::moveTo( Point<double> vector ){
 		point.x += vector.x;
 		point.y += vector.y;
 	}
+	return *this;
 }
 
 Point<double> Polygon::barycenter() const{

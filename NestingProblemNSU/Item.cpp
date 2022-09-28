@@ -14,7 +14,7 @@ Item::Item( int id, Polygon& polygon, double h ) : id_( id ),currentRotation_(0)
 }
 
 Item& Item::rotate(){
-	if ( currentRotation_ == 0 ) return;
+	if ( currentRotation_ == 0 ) return *this;
 	for ( auto& point : points_ )
 	{
 		if ( currentRotation_ == 1 )
@@ -34,6 +34,7 @@ Item& Item::rotate(){
 		}
 	}
 	this->shiftToOrigin();
+	return *this;
 }
 
 const std::vector<std::vector<int>>& Item::matrix() const{
