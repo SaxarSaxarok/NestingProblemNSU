@@ -17,7 +17,7 @@ Item& Item::rotate(){
 	if ( currentRotation_ == 0 ) return *this;
 	for ( auto& point : points_ )
 	{
-		if ( currentRotation_ == 1 )
+		if ( currentRotation_ == 3 )
 		{
 			std::swap( point.x, point.y );
 			point.y *= -1;
@@ -27,7 +27,7 @@ Item& Item::rotate(){
 			point.x *= -1;
 			point.y *= -1;
 		}
-		else if ( currentRotation_ == 3 )
+		else if ( currentRotation_ == 1 )
 		{
 			std::swap( point.x, point.y );
 			point.x *= -1;

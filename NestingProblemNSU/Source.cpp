@@ -41,23 +41,23 @@ int main(){
 		items.push_back( Item( i, vec, h ) );
 		vec.clear();
 	}
-	Packer packer( 1000, 2000, h, items );
+	Packer packer( 2000, 2000, h, items );
 	unsigned int start_time = clock();
 	packer.pack();
 	unsigned int end_time = clock();
 	std::cout << end_time - start_time;
 
 	i = 0;
-	for (auto& pallet : packer.pallets )
+	for ( auto& pallet : packer.pallets )
 	{
-		std::ofstream outfile ("test"+std::to_string(i) +".txt");
+		std::ofstream outfile( "test" + std::to_string( i ) + ".txt" );
 		i++;
 		outfile << pallet.items().size() << std::endl;
 		for ( int j = 0; j < pallet.items().size(); j++ )
 		{
 			for ( int k = 0; k < pallet.items() [j].points().size(); k++ )
 			{
-				outfile << pallet.items() [j].points(k).x << ' ' << pallet.items() [j].points(k).y << ' ';
+				outfile << pallet.items() [j].points( k ).x << ' ' << pallet.items() [j].points( k ).y << ' ';
 			}
 			outfile << std::endl;
 		}
