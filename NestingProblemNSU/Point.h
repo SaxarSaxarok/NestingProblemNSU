@@ -18,4 +18,3 @@ struct Point{
 		return !( *this == p );
 	}
 };
-

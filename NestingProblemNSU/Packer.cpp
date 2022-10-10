@@ -5,7 +5,7 @@
 Packer::Packer( double w, double h, double pixelSize, const std::vector<Item>& items ): width( w ), items(items),  height( h ), pixelSize( pixelSize ){
 	pallets.push_back( Pallet( width, height, pixelSize ) );
 	sort( this->items.begin(), this->items.end(), []( Item const& a, Item const& b ) -> bool
-		  { return a.area()>b.area(); } );
+		  { return a.matrix().size()*a.matrix(0).size()> b.matrix().size() * b.matrix( 0 ).size(); } );
 }
 
 void Packer::pack(){

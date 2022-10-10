@@ -5,8 +5,8 @@
 
 class Polygon{
 protected:
-	mutable Point<double>* barycenterValue_;
-	mutable double* areaValue_;
+	mutable Point<double>* barycenterValue_ = nullptr;
+	mutable double* areaValue_ = nullptr;
 	std::vector<Point<double>> points_;
 
 public:

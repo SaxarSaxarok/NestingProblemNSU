@@ -20,11 +20,12 @@ bool Pallet::packItem( Item& item ){
 	bool isPlaced = false;
 	for ( int i = 0; i < 4; i++ )
 	{
+		bool isLocalPlaced = false;
 		int x = 0, y = 0;
 		item.currentRotation( i );
-		isPlaced = findPlacePosition( item, x, y );
-
-		if ( optimalY > y + item.matrix().size() || ( optimalY == y + item.matrix().size() && optimalX > x ) )
+		isLocalPlaced = findPlacePosition( item, x, y );
+		if ( isLocalPlaced ) isPlaced = true;
+		if (( optimalY > y + item.matrix().size() || ( optimalY == y + item.matrix().size() && optimalX > x ) ) && (isLocalPlaced ))
 		{
 			optimalY = y + item.matrix().size();
 			optimalX = x;

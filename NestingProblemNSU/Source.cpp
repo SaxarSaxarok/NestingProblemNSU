@@ -8,6 +8,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <iomanip>
 
 std::istream& operator>>( std::istream& is, Point<double>& p ){
 	is >> p.x;
@@ -56,7 +57,7 @@ int main(){
 		{
 			for ( int k = 0; k < pallet.items() [j].points().size(); k++ )
 			{
-				outfile << pallet.items() [j].points( k ).y << ' ' << pallet.items() [j].points( k ).x << ' ';
+				outfile << std::setprecision(16)<<pallet.items() [j].points( k ).y << ' ' << pallet.items() [j].points( k ).x << ' ';
 			}
 			outfile << std::endl;
 		}
