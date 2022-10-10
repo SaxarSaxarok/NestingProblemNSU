@@ -47,7 +47,7 @@ const std::vector<Point<double>>& Polygon::points() const{
 }
 
 Point<double> Polygon::points( int i ) const{
-	return points_[i];
+	return points_ [i];
 }
 
 Point<double> Polygon::operator[]( int i ) const{
@@ -169,20 +169,20 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( double h ){
 			int i1 = ( i0 + 1 ) % size;
 			if ( ( std::min( points_ [i0].y, points_ [i1].y ) <= k * h ) &&
 				 k * h <= std::max( points_ [i0].y, points_ [i1].y ) &&
-				 abs( points_ [i1].y - points_ [i0].y ) > 0.0000000001)
+				 abs( points_ [i1].y - points_ [i0].y ) > 0.0000000001 )
 			{
 				double a = -( points_ [i1].x - points_ [i0].x ) / ( points_ [i1].y - points_ [i0].y );
 				double b = -points_ [i0].x - points_ [i0].y * a;
 				double yP = k * h;
-				double xP =  -b - a * k * h ;
+				double xP = -b - a * k * h;
 
 				if ( abs( xP - points_ [i0].x ) < 0.0000000001 )
 				{
-					if ( ( points_ [i1].y - yP ) * ( points_ [( ( ( i0 - 1 ) % size ) + size ) % size].y - yP ) < 0 )
+					if ( ( points_ [i1].y - yP ) * ( points_ [i0==0? size-1 : i0-1].y - yP ) < 0 )
 					{
 						edges [k][floor( xP / h + accuracy )] += 1;
 					}
-					else if ( ( points_ [i1].y - yP ) * ( points_ [( ( ( i0 - 1 ) % size ) + size ) % size].y - yP ) > 0 )
+					else if ( ( points_ [i1].y - yP ) * ( points_ [i0==0 ? size-1: i0-1].y - yP ) > 0 )
 					{
 						edges [k][floor( xP / h + accuracy )] += 2;
 					}
@@ -223,8 +223,8 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( double h ){
 	for ( auto i = 0; i < size; i++ )
 	{
 		int j = ( i + 1 ) % size;
-		Point<double> i1( points_ [j] );
-		Point<double> i2( points_ [i] );
+		Point<double> i1( points_ [i] );
+		Point<double> i2( points_ [j] );
 
 		Point<int> j1( floor( i1.x / h ), floor( i1.y / h ) );
 		Point<int> j2( floor( i2.x / h ), floor( i2.y / h ) );
@@ -267,9 +267,9 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( double h ){
 				{
 					double a = -( i2.x - i1.x ) / ( i2.y - i1.y );
 					double b = -i1.x - i1.y * a;
-					double xP =  -b - a * ( p.y + check ) * h ;
+					double xP = -b - a * ( p.y + check ) * h;
 
-					if ( floor( xP / h ) == p.x )
+					if ( floor( xP / h +accuracy) == p.x )
 					{
 						p.y += stepY;
 					}
