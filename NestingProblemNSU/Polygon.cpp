@@ -225,7 +225,6 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( double h ){
 		int j = ( i + 1 ) % size;
 		Point<double> i1( points_ [i] );
 		Point<double> i2( points_ [j] );
-
 		Point<int> j1( floor( i1.x / h ), floor( i1.y / h ) );
 		Point<int> j2( floor( i2.x / h ), floor( i2.y / h ) );
 
@@ -268,8 +267,7 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( double h ){
 					double a = -( i2.x - i1.x ) / ( i2.y - i1.y );
 					double b = -i1.x - i1.y * a;
 					double xP = -b - a * ( p.y + check ) * h;
-
-					if ( floor( xP / h +accuracy) == p.x )
+					if ( (xP>0?floor( xP / h+accuracy):ceil(xP/h-accuracy)) == p.x )
 					{
 						p.y += stepY;
 					}

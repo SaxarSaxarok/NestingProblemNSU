@@ -40,7 +40,7 @@ bool Pallet::packItem( Item& item ){
 		/*std::cout << item.currentRotation() << std::endl;*/
 		placeItem( item, optimalX, optimalY - item.matrix().size() );
 		items_.push_back( item );
-		std::cout << item.id_ << std::endl;
+		//std::cout << item.id_ << std::endl;
 	}
 	return isPlaced;
 }
