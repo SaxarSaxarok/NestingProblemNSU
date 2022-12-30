@@ -33,7 +33,7 @@ Item& Item::rotate(){
 			point.x *= -1;
 		}
 	}
-	this->shiftToOrigin();
+	this->shiftToGlobalOrigin();
 	return *this;
 }
 

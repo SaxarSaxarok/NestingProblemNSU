@@ -4,126 +4,103 @@
 #include <algorithm>
 #include <iostream>
 #include <iomanip>
+#include "Direction.h"
 
 Polygon::Polygon(){}
 
-Polygon::Polygon( const std::vector<Point<double>>& points_ ){
-	for ( auto& point : points_ )
+Polygon::Polygon( const std::vector<Point<double>>& points ){//DONE
+	for ( auto& point : points )
 	{
 		this->points_.push_back( point );
 	}
+	this->shiftToGlobalOrigin();
+	this->localOrigin( Point<double>( 0, 0 ) );
 }
 
-Polygon::Polygon( const Polygon& polygon_ ){
-	for ( auto& point : polygon_.points_ )
-	{
-		this->points_.push_back( point );
-	}
-}
-
-Polygon::Polygon( Polygon&& polygon ) noexcept{
-	this->points_.swap( polygon.points_ );
-}
-
-Polygon& Polygon::operator = ( const Polygon& polygon ){
-	barycenterValue_ = nullptr;
-	areaValue_ = nullptr;
+Polygon::Polygon( const Polygon& polygon ){//DONE
 	for ( auto& point : polygon.points_ )
 	{
 		this->points_.push_back( point );
 	}
-	return *this;
+	this->localOrigin( polygon.localOrigin() );
 }
 
-Polygon& Polygon::operator = ( Polygon&& polygon ) noexcept{
-	barycenterValue_ = nullptr;
-	areaValue_ = nullptr;
+Polygon::Polygon( Polygon&& polygon ) noexcept{//DONE
 	this->points_.swap( polygon.points_ );
+	this->localOrigin( polygon.localOrigin() );
+}
+
+Polygon& Polygon::operator = ( const Polygon& polygon ){//DONE
+	for ( auto& point : polygon.points_ )
+	{
+		this->points_.push_back( point );
+	}
+	this->localOrigin( polygon.localOrigin() );
 	return *this;
 }
 
-const std::vector<Point<double>>& Polygon::points() const{
-	return points_;
+Polygon& Polygon::operator = ( Polygon&& polygon ) noexcept{//DONE
+	this->points_.swap( polygon.points_ );
+	this->localOrigin( polygon.localOrigin() );
+	return *this;
 }
 
-Point<double> Polygon::points( int i ) const{
-	return points_ [i];
+Point<double> Polygon::localOrigin() const{ //DONE
+	if ( localOriginValue_ == nullptr )
+	{
+		auto minXY = this->minXY();
+		localOriginValue_ = new Point<double>( minXY.first, minXY.second );
+	}
+	return *localOriginValue_;
 }
 
-Point<double> Polygon::operator[]( int i ) const{
-	if ( i > -1 && i < this->points_.size() )
-		return this->points_ [i];
-	else
-		throw std::out_of_range( "The index is out of range" );
+void Polygon::localOrigin( Point<double> point ) const{ //DONE
+	if ( this->localOriginValue_ == nullptr )
+	{
+		this->localOriginValue_ = new Point<double>( point );
+		return;
+	}
+	*( this->localOriginValue_ ) = point;
 }
 
-int Polygon::size() const{
+Point<double> Polygon::operator[]( int i ) const{//DONE
+	return this->localOrigin() + this->points_ [i];
+}
+
+int Polygon::size() const{//DONE
 	return points_.size();
 }
 
-Polygon& Polygon::moveTo( Point<double> vector ){
-	for ( auto& point : points_ )
-	{
-		point.x += vector.x;
-		point.y += vector.y;
-	}
+Polygon& Polygon::moveTo( Point<double> point ){//DONE (ÍÎ ÒÓÒ ÄÎ ÝÒÎÃÎ ÁÛËÎ ÍÅÏÐÀÂÈËÜÍÎ, ÌÎÆÅÒ ÏÎËÎÌÀÒÜÑß ÊÎÄ, ÍÎ Â ÖÅËÎÌ ÝÒÎ ÍÅ ÑÒÐÀØÍÎ ÅÑËÈ ÒÛ ÁÓÄÅØÜ ÏÅÐÅÏÈÑÛÂÀÒÜ)
+	this->localOrigin( point );
 	return *this;
 }
 
-Point<double> Polygon::barycenter() const{
-	if ( barycenterValue_ == nullptr )
-	{
-		double xsum = 0.0;
-		double ysum = 0.0;
-		int size = this->size();
-		for ( int i = 0; i < size - 1; i++ )
-		{
-			double areaSum = points_ [i].x * points_ [i + 1].y - points_ [i + 1].x * points_ [i].y;
-
-			xsum += ( points_ [i].x + points_ [i + 1].x ) * areaSum;
-			ysum += ( points_ [i].y + points_ [i + 1].y ) * areaSum;
-		}
-		xsum += ( points_ [size - 1].x + points_ [0].x ) * points_ [size - 1].x * points_ [0].y - points_ [0].x * points_ [size - 1].y;
-		ysum += ( points_ [0].y + points_ [size - 1].y ) * points_ [0].x * points_ [size - 1].y - points_ [size - 1].x * points_ [0].y;
-
-		barycenterValue_ = new Point<double>( xsum / ( -area() * 6 ), ysum / ( -area() * 6 ) );
-	}
-	return *barycenterValue_;
-}
-
-double Polygon::area() const{
-	if ( areaValue_ == nullptr )
-	{
-		double area = 0.0f;
-		int size = this->size();
-
-		for ( int i = 0; i < size - 1; i++ )
-		{
-			area += points_ [i].x * points_ [i + 1].y - points_ [i + 1].x * points_ [i].y;
-		}
-		area += points_ [size - 1].x * points_ [0].y - points_ [size - 1].y * points_ [0].x;
-		area = abs( area ) / 2;
-		areaValue_ = new double( area );
-	}
-	return *areaValue_;
+Polygon& Polygon::translateOn( Point<double> vector ){// DONE
+	this->localOrigin( localOrigin() + vector );
+	return *this;
 }
 
 
 
+Polygon* Polygon::shiftToGlobalOrigin(){// DONE
+	if ( localOriginValue_ != nullptr )
+	{
+		this->localOrigin( Point<double>( 0, 0 ) );
+		return this;
+	}
 
-Polygon* Polygon::shiftToOrigin(){
-	std::pair<double, double> minXY = MinXY();
+	std::pair<double, double> minXY = this->minXY();
 
 	for ( auto& point : points_ )
 	{
 		point.x -= minXY.first;
 		point.y -= minXY.second;
 	}
-	barycenterValue_ = nullptr;
 	return this;
 }
 
-std::pair<double, double> Polygon::MaxXY() const{
+std::pair<double, double> Polygon::maxXY() const{ //Not done. Íî íàâåðíîå ìîæíî çàáèòü
 	double maxX = points_ [0].x;
 	double maxY = points_ [0].y;
 
@@ -136,7 +113,10 @@ std::pair<double, double> Polygon::MaxXY() const{
 	return std::pair<double, double>( maxX, maxY );
 }
 
-std::pair<double, double> Polygon::MinXY() const{
+std::pair<double, double> Polygon::minXY() const{ //DONE
+
+	if ( localOriginValue_ != nullptr ) return std::pair<double, double>( this->localOrigin().x, this->localOrigin().y );
+
 	double minX = points_ [0].x;
 	double minY = points_ [0].y;
 
@@ -149,11 +129,11 @@ std::pair<double, double> Polygon::MinXY() const{
 	return std::pair<double, double>( minX, minY );
 }
 
-std::vector<std::vector<int>> Polygon::getMatrixRepresentation( double h ){
+std::vector<std::vector<int>> Polygon::getMatrixRepresentation( double h ){ //Ïåðåíåñòè â äðóãîé êëàññ
 	double accuracy = h * 0.000001;
-	this->shiftToOrigin();
-	auto maxXY = this->MaxXY();
-	auto minXY = this->MinXY();
+	this->shiftToGlobalOrigin();
+	auto maxXY = this->maxXY();
+	auto minXY = this->minXY();
 	double xSideLen = maxXY.first - minXY.first;
 	double ySideLen = maxXY.second - minXY.second;
 	int nX = ceil( xSideLen / h );
@@ -178,11 +158,11 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( double h ){
 
 				if ( abs( xP - points_ [i0].x ) < 0.0000000001 )
 				{
-					if ( ( points_ [i1].y - yP ) * ( points_ [i0==0? size-1 : i0-1].y - yP ) < 0 )
+					if ( ( points_ [i1].y - yP ) * ( points_ [i0 == 0 ? size - 1 : i0 - 1].y - yP ) < 0 )
 					{
 						edges [k][floor( xP / h + accuracy )] += 1;
 					}
-					else if ( ( points_ [i1].y - yP ) * ( points_ [i0==0 ? size-1: i0-1].y - yP ) > 0 )
+					else if ( ( points_ [i1].y - yP ) * ( points_ [i0 == 0 ? size - 1 : i0 - 1].y - yP ) > 0 )
 					{
 						edges [k][floor( xP / h + accuracy )] += 2;
 					}
@@ -267,7 +247,7 @@ std::vector<std::vector<int>> Polygon::getMatrixRepresentation( double h ){
 					double a = -( i2.x - i1.x ) / ( i2.y - i1.y );
 					double b = -i1.x - i1.y * a;
 					double xP = -b - a * ( p.y + check ) * h;
-					if ( (xP>0?floor( xP / h+accuracy):ceil(xP/h-accuracy)) == p.x )
+					if ( ( xP > 0 ? floor( xP / h + accuracy ) : ceil( xP / h - accuracy ) ) == p.x )
 					{
 						p.y += stepY;
 					}

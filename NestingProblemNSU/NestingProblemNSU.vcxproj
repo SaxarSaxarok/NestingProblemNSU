@@ -117,6 +117,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -140,18 +142,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Arrangement.cpp" />
+    <ClCompile Include="Direction.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="Packer.cpp" />
     <ClCompile Include="Pallet.cpp" />
     <ClCompile Include="Polygon.cpp" />
+    <ClCompile Include="Segment.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="SweepLine.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Arrangement.h" />
+    <ClInclude Include="AvlTree.h" />
+    <ClInclude Include="Direction.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="Packer.h" />
     <ClInclude Include="Pallet.h" />
     <ClInclude Include="Polygon.h" />
     <ClInclude Include="Point.h" />
+    <ClInclude Include="Segment.h" />
+    <ClInclude Include="SweepLine.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
